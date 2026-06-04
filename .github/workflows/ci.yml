@@ -1,12 +1,10 @@
 name: CI
 
-# Runs on PRs and on pushes to main. (release.yml also gates main before
-# publishing; the release bot's changelog commit carries [skip ci], so it
-# doesn't re-trigger this.)
+# Pull-request gate. Pushes to main are validated (and released) by release.yml,
+# which runs the same typecheck + test + build before publishing — so we don't
+# duplicate the run here.
 on:
   pull_request:
-  push:
-    branches: [main]
 
 # Run JavaScript actions on the Node 24 runtime (opt-in until GitHub defaults to it).
 env:
