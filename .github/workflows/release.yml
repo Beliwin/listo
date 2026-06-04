@@ -18,6 +18,10 @@ concurrency:
   group: release
   cancel-in-progress: false
 
+# Run JavaScript actions on the Node 24 runtime (opt-in until GitHub defaults to it).
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   release:
     runs-on: ubuntu-latest
