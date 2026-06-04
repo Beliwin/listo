@@ -22,8 +22,9 @@ RUN pnpm --filter @listo/web build \
  && pnpm --filter @listo/server build
 
 # Produce a self-contained production install for the server (incl. the compiled
-# better-sqlite3 binary) in /app/deploy.
-RUN pnpm --filter @listo/server deploy --prod /app/deploy
+# better-sqlite3 binary) in /app/deploy. --legacy: pnpm v10 otherwise refuses to
+# deploy a workspace package without inject-workspace-packages.
+RUN pnpm --filter @listo/server deploy --prod --legacy /app/deploy
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 2 — minimal runtime. No toolchain; just node, the bundled server, its
