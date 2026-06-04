@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Runtime data (SQLite database + WAL sidecars)
+data/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Test / coverage
+coverage/
+*.local
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log

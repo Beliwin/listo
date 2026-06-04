@@ -1,0 +1,28 @@
+services:
+  listo:
+    image: ghcr.io/beliwin/listo:latest
+    # To build from source instead of pulling, comment `image:` and uncomment:
+    # build: .
+    container_name: listo
+    restart: unless-stopped
+    ports:
+      - "8787:8787"
+    environment:
+      # REQUIRED — set both in a .env file next to this compose file.
+      INSTANCE_PASSWORD: ${INSTANCE_PASSWORD:?set INSTANCE_PASSWORD in .env}
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET in .env}
+      # Behind a TLS-terminating reverse proxy (recommended): keep true.
+      TRUST_PROXY: "true"
+      LOG_LEVEL: info
+    volumes:
+      # The whole DATA_DIR is persisted (the .db AND its -wal/-shm sidecars).
+      - listo-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8787/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  listo-data:
