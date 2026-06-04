@@ -18,7 +18,8 @@ concurrency:
   group: release
   cancel-in-progress: false
 
-# Run JavaScript actions on the Node 24 runtime (opt-in until GitHub defaults to it).
+# Belt-and-braces for the Docker actions, which still target node20 until they
+# ship a node24 release; the rest are already on node24 (v6+).
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
@@ -26,12 +27,12 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # full history so semantic-release sees tags/commits
 
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
@@ -42,7 +43,7 @@ jobs:
       - run: pnpm build
 
       - id: semantic
-        uses: cycjimmy/semantic-release-action@v4
+        uses: cycjimmy/semantic-release-action@v6
         with:
           extra_plugins: |
             conventional-changelog-conventionalcommits
