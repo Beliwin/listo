@@ -1,4 +1,4 @@
-import { type FieldDelta, type Hlc, catalogItemId, newId, parseHlc } from "@listo/shared";
+import { type FieldDelta, type Hlc, catalogItemId, newId, normalizeName, parseHlc } from "@listo/shared";
 import type { EntityKind } from "@listo/shared";
 import type { ListoDB, LocalItem } from "../db/dexie.js";
 import type { ClientClock } from "./clock.js";
@@ -127,6 +127,11 @@ export async function setQty(db: ListoDB, clock: ClientClock, id: string, qty: n
   await commit(db, clock, "item", id, { qty });
 }
 
+export async function setQtyText(db: ListoDB, clock: ClientClock, id: string, qtyText: string | null): Promise<void> {
+  const value = qtyText && qtyText.trim() ? qtyText.trim() : null;
+  await commit(db, clock, "item", id, { qtyText: value });
+}
+
 export async function setItemFields(
   db: ListoDB,
   clock: ClientClock,
@@ -168,4 +173,33 @@ export async function upsertCatalogEntry(db: ListoDB, clock: ClientClock, input:
     defaultUnitKey: input.defaultUnitKey ?? null,
     useCount: 0,
   });
+}
+
+/**
+ * Set the aisle of a product (by catalogId). Stored on the catalog entry, so it
+ * sticks for next time and applies to every item of that product. Creates a user
+ * override row for a seed product (id = seed key) the first time.
+ */
+export async function setCatalogCategory(
+  db: ListoDB,
+  clock: ClientClock,
+  input: { catalogId: string; displayName: string; locale: string; categoryKey: string | null },
+): Promise<void> {
+  await commit(db, clock, "catalog", input.catalogId, {
+    displayName: input.displayName,
+    normalizedName: normalizeName(input.displayName),
+    locale: input.locale,
+    categoryKey: input.categoryKey,
+  });
+}
+
+/** Persist a custom aisle ordering (synced across devices via the category entity). */
+export async function setCategorySortOrders(
+  db: ListoDB,
+  clock: ClientClock,
+  entries: { key: string; sortOrder: number }[],
+): Promise<void> {
+  for (const e of entries) {
+    await commit(db, clock, "category", e.key, { sortOrder: e.sortOrder });
+  }
 }

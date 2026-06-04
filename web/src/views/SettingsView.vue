@@ -57,6 +57,17 @@ async function logout(): Promise<void> {
         </label>
       </section>
 
+      <nav class="card links">
+        <router-link class="link" :to="{ name: 'categories' }">
+          <span>🗂️ {{ t("settings.categoriesOrder") }}</span>
+          <span class="chev" aria-hidden="true">›</span>
+        </router-link>
+        <router-link class="link" :to="{ name: 'catalog' }">
+          <span>📒 {{ t("settings.catalog") }}</span>
+          <span class="chev" aria-hidden="true">›</span>
+        </router-link>
+      </nav>
+
       <section class="card group">
         <button class="btn btn-danger logout" @click="logout">{{ t("settings.logout") }}</button>
       </section>
@@ -100,6 +111,28 @@ async function logout(): Promise<void> {
   background: var(--surface);
   box-shadow: var(--shadow-sm);
   color: var(--primary);
+}
+.links {
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem;
+}
+.link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 0.85rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: inherit;
+  font-weight: 500;
+}
+.link:hover {
+  background: var(--surface-2);
+}
+.link .chev {
+  color: var(--muted);
+  font-size: 1.3rem;
 }
 .logout {
   align-self: flex-start;

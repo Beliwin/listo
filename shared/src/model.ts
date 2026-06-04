@@ -25,7 +25,11 @@ export interface Item {
   catalogId: string | null;
   /** Free-text label (also set for catalog items, for offline display). */
   name: string;
+  /** Free-text quantity, e.g. "2 kg", "x3". Replaces the legacy qty + unitKey. */
+  qtyText: string | null;
+  /** @deprecated legacy numeric quantity; kept for back-compat. */
   qty: number | null;
+  /** @deprecated legacy unit key; kept for back-compat. */
   unitKey: string | null;
   checked: boolean;
   /** Epoch ms when last checked; drives the "Pris" section ordering. Display only. */
@@ -72,6 +76,7 @@ export interface Unit {
 /** The fields of an Item that are independently mergeable under per-field LWW. */
 export const ITEM_LWW_FIELDS = [
   "name",
+  "qtyText",
   "qty",
   "unitKey",
   "checked",

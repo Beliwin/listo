@@ -1,7 +1,15 @@
 import { catalogItemId } from "@listo/shared";
 import { afterEach, describe, expect, it } from "vitest";
 import { loadClientClock } from "@/sync/clock";
-import { addItem, deleteItem, setChecked, setQty } from "@/sync/mutations";
+import {
+  addItem,
+  deleteItem,
+  setCatalogCategory,
+  setCategorySortOrders,
+  setChecked,
+  setQty,
+  setQtyText,
+} from "@/sync/mutations";
 import { pending, pendingCount } from "@/sync/outbox";
 import { cleanupDbs, freshDb } from "./db-helper";
 
@@ -45,5 +53,35 @@ describe("mutations", () => {
     await deleteItem(db, clock, id);
     expect((await db.items.get(id))?.deleted).toBe(1);
     expect(await pendingCount(db)).toBe(4); // add + qty + check + delete
+  });
+
+  it("setQtyText stores free-text quantity and blanks to null", async () => {
+    const db = freshDb();
+    const clock = await loadClientClock(db, () => 1000);
+    const id = await addItem(db, clock, { listId: "l1", name: "Pâtes", rank: "a" });
+    await setQtyText(db, clock, id, "2 paquets");
+    expect((await db.items.get(id))?.qtyText).toBe("2 paquets");
+    await setQtyText(db, clock, id, "   ");
+    expect((await db.items.get(id))?.qtyText).toBeNull();
+  });
+
+  it("setCatalogCategory upserts then updates a product's aisle", async () => {
+    const db = freshDb();
+    const clock = await loadClientClock(db, () => 1000);
+    await setCatalogCategory(db, clock, { catalogId: "milk", displayName: "Lait", locale: "fr", categoryKey: "boissons" });
+    expect((await db.catalog.get("milk"))?.categoryKey).toBe("boissons");
+    await setCatalogCategory(db, clock, { catalogId: "milk", displayName: "Lait", locale: "fr", categoryKey: "cremerie" });
+    expect((await db.catalog.get("milk"))?.categoryKey).toBe("cremerie");
+  });
+
+  it("setCategorySortOrders persists a custom aisle order", async () => {
+    const db = freshDb();
+    const clock = await loadClientClock(db, () => 1000);
+    await setCategorySortOrders(db, clock, [
+      { key: "boissons", sortOrder: 0 },
+      { key: "cremerie", sortOrder: 1 },
+    ]);
+    expect((await db.categories.get("boissons"))?.sortOrder).toBe(0);
+    expect((await db.categories.get("cremerie"))?.sortOrder).toBe(1);
   });
 });

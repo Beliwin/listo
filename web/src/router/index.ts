@@ -10,6 +10,8 @@ export const router = createRouter({
     { path: "/", name: "lists", component: () => import("@/views/ListsView.vue") },
     { path: "/lists/:id", name: "list", component: () => import("@/views/ListView.vue"), props: true },
     { path: "/settings", name: "settings", component: () => import("@/views/SettingsView.vue") },
+    { path: "/settings/categories", name: "categories", component: () => import("@/views/CategoriesView.vue") },
+    { path: "/settings/catalog", name: "catalog", component: () => import("@/views/CatalogView.vue") },
     { path: "/:pathMatch(.*)*", redirect: "/" },
   ],
 });

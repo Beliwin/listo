@@ -1,25 +1,31 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { UNITS } from "@/catalog/units";
+import { useCategories } from "@/composables/useCategories";
 import type { LocalItem } from "@/db/dexie";
-import { deleteItem, setChecked, setItemFields, setQty } from "@/sync/mutations";
+import { currentLocale } from "@/i18n";
+import { deleteItem, setCatalogCategory, setChecked, setQtyText } from "@/sync/mutations";
 import { clock, database } from "@/sync/service";
 
-const props = defineProps<{ item: LocalItem }>();
+const props = defineProps<{ item: LocalItem; categoryKey: string }>();
 const { t } = useI18n();
+const categories = useCategories();
 const expanded = ref(false);
 
 const toggle = () => setChecked(database(), clock(), props.item.id, props.item.checked === 0);
 const remove = () => deleteItem(database(), clock(), props.item.id);
 
-function bumpQty(delta: number): void {
-  const next = Math.max(0, (props.item.qty ?? 0) + delta);
-  void setQty(database(), clock(), props.item.id, next === 0 ? null : next);
+function onQty(e: Event): void {
+  void setQtyText(database(), clock(), props.item.id, (e.target as HTMLInputElement).value);
 }
-function onUnit(e: Event): void {
-  const unitKey = (e.target as HTMLSelectElement).value || null;
-  void setItemFields(database(), clock(), props.item.id, { unitKey });
+function onCategory(e: Event): void {
+  if (!props.item.catalogId) return;
+  void setCatalogCategory(database(), clock(), {
+    catalogId: props.item.catalogId,
+    displayName: props.item.name,
+    locale: currentLocale(),
+    categoryKey: (e.target as HTMLSelectElement).value,
+  });
 }
 </script>
 
@@ -39,24 +45,36 @@ function onUnit(e: Event): void {
 
     <button class="body" @click="expanded = !expanded">
       <span class="name">{{ item.name }}</span>
-      <span v-if="item.qty" class="qty-pill">
-        {{ item.qty }}<template v-if="item.unitKey"> {{ t(`unit.${item.unitKey}`) }}</template>
-      </span>
+      <span v-if="item.qtyText" class="qty-pill">{{ item.qtyText }}</span>
       <span v-if="item.addedBy" class="by muted">{{ item.addedBy }}</span>
     </button>
 
-    <button class="btn-icon more" :aria-label="t('item.note')" @click="expanded = !expanded">⋯</button>
+    <button class="btn-icon more" :aria-label="t('item.edit')" :aria-expanded="expanded" @click="expanded = !expanded">⋯</button>
 
     <div v-if="expanded" class="editor">
-      <div class="stepper" role="group" :aria-label="t('item.qty')">
-        <button class="btn-icon" :aria-label="'-'" @click="bumpQty(-1)">−</button>
-        <span class="qty-val">{{ item.qty ?? 0 }}</span>
-        <button class="btn-icon" :aria-label="'+'" @click="bumpQty(1)">＋</button>
-      </div>
-      <select class="input unit-select" :value="item.unitKey ?? ''" :aria-label="t('item.unit')" @change="onUnit">
-        <option value="">—</option>
-        <option v-for="u in UNITS" :key="u" :value="u">{{ t(`unit.${u}`) }}</option>
-      </select>
+      <label class="field-inline">
+        <span class="sr-only">{{ t("item.quantity") }}</span>
+        <input
+          class="input qty-input"
+          type="text"
+          inputmode="text"
+          :value="item.qtyText ?? ''"
+          :placeholder="t('item.quantity')"
+          @change="onQty"
+        />
+      </label>
+      <label class="field-inline">
+        <span class="sr-only">{{ t("item.category") }}</span>
+        <select
+          class="input cat-select"
+          :value="categoryKey"
+          :disabled="!item.catalogId"
+          :aria-label="t('item.category')"
+          @change="onCategory"
+        >
+          <option v-for="c in categories" :key="c.key" :value="c.key">{{ c.icon }} {{ t(`category.${c.key}`) }}</option>
+        </select>
+      </label>
       <button class="btn btn-danger del" @click="remove">🗑 {{ t("item.remove") }}</button>
     </div>
   </li>
@@ -124,22 +142,16 @@ function onUnit(e: Event): void {
   padding: 0.5rem 0.5rem 0.75rem 3rem;
   flex-wrap: wrap;
 }
-.stepper {
+.field-inline {
   display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  background: var(--surface-2);
-  border-radius: var(--radius-pill);
-  padding: 0.1rem;
 }
-.qty-val {
-  min-width: 1.5rem;
-  text-align: center;
-  font-weight: 600;
+.qty-input {
+  width: 8rem;
+  min-height: 40px;
 }
-.unit-select {
+.cat-select {
   width: auto;
-  min-width: 6rem;
+  min-width: 9rem;
   min-height: 40px;
 }
 .del {

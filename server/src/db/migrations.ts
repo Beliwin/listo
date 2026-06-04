@@ -130,4 +130,12 @@ export const MIGRATIONS: Migration[] = [
       CREATE INDEX ix_history_catalog ON purchase_history(catalog_id);
     `,
   },
+  {
+    name: "004_qty_text",
+    sql: /* sql */ `
+      -- Free-text quantity (e.g. "2 kg", "x3", "1 paquet"), replacing the numeric
+      -- qty + unit pair in the UI. The old columns stay for back-compat.
+      ALTER TABLE items ADD COLUMN qty_text TEXT;
+    `,
+  },
 ];

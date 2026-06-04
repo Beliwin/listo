@@ -31,6 +31,7 @@ function defaultRow(entity: EntityKind, id: string): Row {
         listId: "",
         catalogId: null,
         name: "",
+        qtyText: null,
         qty: null,
         unitKey: null,
         checked: 0,

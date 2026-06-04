@@ -32,14 +32,24 @@ export default {
   },
   item: {
     qty: "Quantité",
+    quantity: "Quantité",
     unit: "Unité",
+    category: "Rayon",
     note: "Note",
+    edit: "Modifier",
     remove: "Retirer",
     addedBy: "Ajouté par {name}",
   },
   suggestions: {
     title: "Suggestions",
     empty: "Pas encore de suggestions.",
+  },
+  catalog: {
+    searchPlaceholder: "Rechercher un article…",
+    empty: "Aucun article.",
+  },
+  categoriesOrder: {
+    hint: "Réordonne les rayons — ça change l'ordre d'affichage dans toutes les listes.",
   },
   sync: {
     online: "Synchronisé",
@@ -51,6 +61,8 @@ export default {
     title: "Réglages",
     language: "Langue",
     deviceName: "Nom de l'appareil",
+    categoriesOrder: "Ordre des rayons",
+    catalog: "Catalogue d'articles",
     logout: "Déconnexion",
     about: "À propos",
     install: "Installer l'application",
@@ -68,6 +80,8 @@ export default {
     close: "Fermer",
     confirm: "Confirmer",
     back: "Retour",
+    moveUp: "Monter",
+    moveDown: "Descendre",
   },
   category: {
     "fruits-legumes": "Fruits & légumes",

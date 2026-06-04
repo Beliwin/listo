@@ -20,6 +20,7 @@ export interface LocalItem {
   listId: string;
   catalogId: string | null;
   name: string;
+  qtyText: string | null;
   qty: number | null;
   unitKey: string | null;
   checked: 0 | 1;

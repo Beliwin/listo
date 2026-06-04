@@ -37,6 +37,7 @@ export const ENTITY_SPECS: Record<EntityKind, EntitySpec> = {
       name: { col: "name", kind: "text" },
       qty: { col: "qty", kind: "real" },
       unitKey: { col: "unit_key", kind: "text" },
+      qtyText: { col: "qty_text", kind: "text" },
       checked: { col: "checked", kind: "bool" },
       checkedAt: { col: "checked_at", kind: "int" },
       addedBy: { col: "added_by", kind: "text" },

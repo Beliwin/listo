@@ -52,7 +52,6 @@ async function add(entry?: CatalogEntry): Promise<void> {
     name,
     rank: rankAtEnd(props.lastRank),
     catalogId,
-    unitKey: entry?.defaultUnitKey ?? null,
     addedBy: settings.deviceName || null,
   });
 

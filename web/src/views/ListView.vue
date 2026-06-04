@@ -8,7 +8,8 @@ import QuickAddBar from "@/components/QuickAddBar.vue";
 import SuggestionsPanel from "@/components/SuggestionsPanel.vue";
 import SyncIndicator from "@/components/SyncIndicator.vue";
 import { CATALOG_SEED } from "@/catalog/seed";
-import { category, categorySortOrder } from "@/catalog/categories";
+import { category } from "@/catalog/categories";
+import { useCategories } from "@/composables/useCategories";
 import { useLiveQuery } from "@/db/live";
 import type { LocalItem } from "@/db/dexie";
 import { clearChecked, deleteList, renameList } from "@/sync/mutations";
@@ -26,12 +27,16 @@ const items = useLiveQuery(
 );
 const userCatalog = useLiveQuery(() => database().catalog.toArray(), []);
 
+const categories = useCategories();
+const orderMap = computed(() => new Map(categories.value.map((c) => [c.key, c.sortOrder])));
+
 const catMap = computed(() => {
   const m = new Map<string, string | null>();
   for (const s of CATALOG_SEED) m.set(s.key, s.categoryKey);
   for (const u of userCatalog.value) m.set(u.id, u.categoryKey);
   return m;
 });
+const catKeyOf = (it: LocalItem): string => (it.catalogId && catMap.value.get(it.catalogId)) || "autre";
 
 const unchecked = computed(() => items.value.filter((i) => i.checked === 0));
 const taken = computed(() => items.value.filter((i) => i.checked === 1).sort((a, b) => (b.checkedAt ?? 0) - (a.checkedAt ?? 0)));
@@ -40,11 +45,11 @@ const lastRank = computed(() => items.value.map((i) => i.rank).sort().at(-1) ?? 
 const groups = computed(() => {
   const byCat = new Map<string, LocalItem[]>();
   for (const it of unchecked.value) {
-    const key = (it.catalogId && catMap.value.get(it.catalogId)) || "autre";
+    const key = catKeyOf(it);
     (byCat.get(key) ?? byCat.set(key, []).get(key)!).push(it);
   }
   return [...byCat.entries()]
-    .map(([key, list]) => ({ key, order: categorySortOrder(key), icon: category(key).icon, items: list.sort(byRank) }))
+    .map(([key, list]) => ({ key, order: orderMap.value.get(key) ?? 999, icon: category(key).icon, items: list.sort(byRank) }))
     .sort((a, b) => a.order - b.order);
 });
 
@@ -105,7 +110,7 @@ const clearTaken = () => clearChecked(database(), clock(), props.id);
       <section v-for="g in groups" :key="g.key" class="aisle">
         <h2 class="aisle-head"><span aria-hidden="true">{{ g.icon }}</span> {{ t(`category.${g.key}`) }}</h2>
         <ul class="rows">
-          <ItemRow v-for="it in g.items" :key="it.id" :item="it" />
+          <ItemRow v-for="it in g.items" :key="it.id" :item="it" :category-key="g.key" />
         </ul>
       </section>
 
@@ -115,7 +120,7 @@ const clearTaken = () => clearChecked(database(), clock(), props.id);
           <button class="btn btn-ghost clear" @click="clearTaken">{{ t("list.clearTaken") }}</button>
         </div>
         <ul class="rows">
-          <ItemRow v-for="it in taken" :key="it.id" :item="it" />
+          <ItemRow v-for="it in taken" :key="it.id" :item="it" :category-key="catKeyOf(it)" />
         </ul>
       </section>
     </main>

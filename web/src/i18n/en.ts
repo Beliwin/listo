@@ -32,14 +32,24 @@ export default {
   },
   item: {
     qty: "Quantity",
+    quantity: "Quantity",
     unit: "Unit",
+    category: "Aisle",
     note: "Note",
+    edit: "Edit",
     remove: "Remove",
     addedBy: "Added by {name}",
   },
   suggestions: {
     title: "Suggestions",
     empty: "No suggestions yet.",
+  },
+  catalog: {
+    searchPlaceholder: "Search a product…",
+    empty: "No products.",
+  },
+  categoriesOrder: {
+    hint: "Reorder aisles — this changes how every list is sorted.",
   },
   sync: {
     online: "Synced",
@@ -51,6 +61,8 @@ export default {
     title: "Settings",
     language: "Language",
     deviceName: "Device name",
+    categoriesOrder: "Aisle order",
+    catalog: "Product catalog",
     logout: "Sign out",
     about: "About",
     install: "Install the app",
@@ -68,6 +80,8 @@ export default {
     close: "Close",
     confirm: "Confirm",
     back: "Back",
+    moveUp: "Move up",
+    moveDown: "Move down",
   },
   category: {
     "fruits-legumes": "Produce",
