@@ -1,41 +1,62 @@
+@font-face {
+  font-family: "Hanken Grotesk";
+  src: url(/fonts/hanken-grotesk.woff2) format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fraunces";
+  src: url(/fonts/fraunces.woff2) format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
 :root {
-  --bg: #faf8f4;
+  /* Warm paper light theme — calm, editorial, airy. */
+  --bg: #fbfaf6;
   --surface: #ffffff;
-  --surface-2: #f2ede4;
-  --fg: #1f2429;
-  --muted: #6b7280;
-  --border: #e8e2d7;
-  --primary: #15803d;
-  --primary-fg: #ffffff;
-  --primary-soft: #dcfce7;
-  --accent: #ea580c;
-  --danger: #dc2626;
-  --radius: 18px;
-  --radius-sm: 12px;
+  --surface-2: #f3f0e9;
+  --fg: #221f1a;
+  --muted: #8c867a;
+  --faint: #b6b0a3;
+  --line: #ebe7dd;
+  --accent: #2c7a51;
+  --accent-fg: #ffffff;
+  --accent-soft: #e7f0ea;
+  --danger: #b8462f;
+
+  --font-body: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+
+  --radius: 14px;
+  --radius-sm: 10px;
   --radius-pill: 999px;
-  --shadow-sm: 0 1px 2px rgba(31, 36, 41, 0.05);
-  --shadow: 0 1px 2px rgba(31, 36, 41, 0.04), 0 10px 30px rgba(31, 36, 41, 0.07);
-  --tap: 46px;
-  --header-h: 60px;
-  --maxw: 640px;
+  --shadow-sm: 0 1px 1px rgba(40, 36, 30, 0.03);
+  --shadow: 0 1px 1px rgba(40, 36, 30, 0.03), 0 10px 24px -14px rgba(40, 36, 30, 0.22);
+  --tap: 40px;
+  --header-h: 56px;
+  --maxw: 600px;
+
   color-scheme: light dark;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-family: var(--font-body);
+  font-feature-settings: "ss01";
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0e1512;
-    --surface: #16201b;
-    --surface-2: #1d2a23;
-    --fg: #e8efe9;
-    --muted: #97a39b;
-    --border: #27352c;
-    --primary: #22c55e;
-    --primary-fg: #07130b;
-    --primary-soft: #15331f;
-    --accent: #fb923c;
-    --danger: #f87171;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.35);
+    --bg: #14120d;
+    --surface: #1b1812;
+    --surface-2: #252118;
+    --fg: #ece7db;
+    --muted: #9a9384;
+    --faint: #6c655a;
+    --line: #2a2519;
+    --accent: #5bbd84;
+    --accent-fg: #0b1610;
+    --accent-soft: #1c2c22;
+    --danger: #e0735a;
+    --shadow: 0 1px 1px rgba(0, 0, 0, 0.3), 0 10px 24px -14px rgba(0, 0, 0, 0.55);
   }
 }
 
@@ -50,6 +71,8 @@ body {
 body {
   background: var(--bg);
   color: var(--fg);
+  font-size: 16px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -67,10 +90,16 @@ textarea {
   font: inherit;
   color: inherit;
 }
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 460;
+  letter-spacing: -0.01em;
+}
 
-/* Visible keyboard focus everywhere. */
-:where(button, a, [role="button"], [role="checkbox"], [role="option"], input, select, textarea):focus-visible {
-  outline: 2px solid var(--primary);
+:where(button, a, [role="checkbox"], [role="option"], input, select, textarea):focus-visible {
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 8px;
 }
@@ -85,27 +114,25 @@ textarea {
 }
 .app-main {
   flex: 1;
-  padding: 1rem 1rem calc(6rem + env(safe-area-inset-bottom));
+  padding: 1.25rem 1.15rem calc(6rem + env(safe-area-inset-bottom));
 }
 .app-header {
   position: sticky;
   top: 0;
   z-index: 20;
-  height: var(--header-h);
+  min-height: var(--header-h);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0 0.75rem;
-  padding-top: env(safe-area-inset-top);
-  background: color-mix(in srgb, var(--bg) 86%, transparent);
-  backdrop-filter: saturate(180%) blur(12px);
-  border-bottom: 1px solid var(--border);
+  gap: 0.35rem;
+  padding: 0.4rem 0.65rem;
+  padding-top: max(0.4rem, env(safe-area-inset-top));
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: saturate(140%) blur(14px);
+  border-bottom: 1px solid var(--line);
 }
 .app-header h1 {
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-size: 1.3rem;
   margin: 0;
-  letter-spacing: -0.01em;
   flex: 1;
   display: flex;
   align-items: center;
@@ -120,81 +147,91 @@ textarea {
 
 /* ── Buttons ──────────────────────────────────────────────────────────────── */
 .btn {
-  min-height: var(--tap);
+  min-height: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  padding: 0 1.1rem;
+  padding: 0 1.15rem;
   border-radius: var(--radius-pill);
   border: 1px solid transparent;
-  background: var(--surface-2);
-  font-weight: 600;
-  transition: transform 0.06s ease, background 0.15s ease, box-shadow 0.15s ease;
+  background: transparent;
+  font-weight: 500;
+  transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
 }
 .btn:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 .btn-primary {
-  background: var(--primary);
-  color: var(--primary-fg);
+  background: var(--accent);
+  color: var(--accent-fg);
   box-shadow: var(--shadow-sm);
 }
 .btn-ghost {
-  background: transparent;
+  border-color: var(--line);
+  background: var(--surface);
 }
 .btn-danger {
   color: var(--danger);
-  background: transparent;
 }
+
+/* Quiet icon button: a soft square, never a heavy circle. */
 .btn-icon {
   width: var(--tap);
   height: var(--tap);
   padding: 0;
-  border-radius: var(--radius-pill);
-  background: transparent;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
-  line-height: 1;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
 }
 .btn-icon:hover {
   background: var(--surface-2);
+  color: var(--fg);
+}
+.btn-icon:active {
+  transform: scale(0.92);
+}
+.btn-icon:disabled {
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 /* ── Forms ────────────────────────────────────────────────────────────────── */
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 .field > label {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.82rem;
+  font-weight: 500;
   color: var(--muted);
 }
 .input {
-  min-height: var(--tap);
+  min-height: 42px;
   width: 100%;
-  padding: 0 0.9rem;
+  padding: 0 0.85rem;
   border-radius: var(--radius-sm);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--line);
   background: var(--surface);
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .input:focus-visible {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-soft);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
-/* ── Cards ────────────────────────────────────────────────────────────────── */
+/* ── Surfaces ─────────────────────────────────────────────────────────────── */
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
 }
 
 /* ── Utility ──────────────────────────────────────────────────────────────── */
@@ -204,12 +241,14 @@ textarea {
 .empty-state {
   text-align: center;
   color: var(--muted);
-  padding: 3rem 1rem;
+  padding: 3.5rem 1rem;
+  font-size: 0.95rem;
 }
 .empty-state .emoji {
-  font-size: 2.5rem;
+  font-size: 2rem;
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
+  opacity: 0.7;
 }
 .sr-only {
   position: absolute;
@@ -224,12 +263,12 @@ textarea {
 }
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition: opacity 0.16s ease, transform 0.16s ease;
 }
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: translateY(4px);
+  transform: translateY(3px);
 }
 
 @media (prefers-reduced-motion: reduce) {

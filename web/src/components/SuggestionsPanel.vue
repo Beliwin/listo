@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { api } from "@/api/http";
 import { type CatalogEntry, buildIndex } from "@/catalog/search";
+import Icon from "@/components/Icon.vue";
 import { useLiveQuery } from "@/db/live";
 import { currentLocale } from "@/i18n";
 import { useSettingsStore } from "@/stores/settings";
@@ -58,10 +59,10 @@ async function add(entry: CatalogEntry): Promise<void> {
 
 <template>
   <section v-if="chips.length" class="suggestions" :aria-label="t('suggestions.title')">
-    <h2 class="head">✨ {{ t("suggestions.title") }}</h2>
+    <h2 class="head">{{ t("suggestions.title") }}</h2>
     <div class="chips">
       <button v-for="e in chips" :key="e.catalogId" class="chip" @click="add(e)">
-        <span aria-hidden="true">＋</span> {{ e.displayName }}
+        <Icon name="plus" :size="15" /> {{ e.displayName }}
       </button>
     </div>
   </section>
@@ -72,31 +73,38 @@ async function add(entry: CatalogEntry): Promise<void> {
   margin-top: 1.25rem;
 }
 .head {
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-  margin: 0 0 0.5rem;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  margin: 0 0 0.6rem;
 }
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 .chip {
-  border: 1px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--line);
   background: var(--surface);
   border-radius: var(--radius-pill);
-  padding: 0.5rem 0.9rem;
+  padding: 0.4rem 0.85rem 0.4rem 0.6rem;
   font-weight: 500;
   font-size: 0.9rem;
-  min-height: 40px;
-  box-shadow: var(--shadow-sm);
+  min-height: 38px;
+  color: var(--fg);
+  transition: border-color 0.15s ease, transform 0.08s ease;
 }
-.chip span {
-  color: var(--primary);
-  font-weight: 700;
+.chip :deep(.icon) {
+  color: var(--accent);
+}
+.chip:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
 }
 .chip:active {
   transform: scale(0.96);

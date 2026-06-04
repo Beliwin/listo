@@ -2,6 +2,7 @@
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import AppHeader from "@/components/AppHeader.vue";
+import Icon from "@/components/Icon.vue";
 import { useCategories } from "@/composables/useCategories";
 import { setCategorySortOrders } from "@/sync/mutations";
 import { clock, database } from "@/sync/service";
@@ -43,14 +44,16 @@ async function move(index: number, dir: -1 | 1): Promise<void> {
           <span class="icon" aria-hidden="true">{{ c.icon }}</span>
           <span class="label">{{ t(`category.${c.key}`) }}</span>
           <span class="moves">
-            <button class="btn-icon" :disabled="i === 0" :aria-label="t('common.moveUp')" @click="move(i, -1)">↑</button>
+            <button class="btn-icon" :disabled="i === 0" :aria-label="t('common.moveUp')" @click="move(i, -1)">
+              <Icon name="up" :size="18" />
+            </button>
             <button
               class="btn-icon"
               :disabled="i === categories.length - 1"
               :aria-label="t('common.moveDown')"
               @click="move(i, 1)"
             >
-              ↓
+              <Icon name="down" :size="18" />
             </button>
           </span>
         </li>

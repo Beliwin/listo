@@ -3,6 +3,7 @@ import { catalogItemId, normalizeName } from "@listo/shared";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { type CatalogEntry, buildIndex, searchCatalog, userCatalogId } from "@/catalog/search";
+import Icon from "@/components/Icon.vue";
 import { useLiveQuery } from "@/db/live";
 import { currentLocale } from "@/i18n";
 import { useSettingsStore } from "@/stores/settings";
@@ -64,7 +65,7 @@ async function add(entry?: CatalogEntry): Promise<void> {
 <template>
   <div class="quick-add">
     <form class="bar" @submit.prevent="add()">
-      <span class="icon" aria-hidden="true">＋</span>
+      <span class="icon" aria-hidden="true"><Icon name="plus" :size="18" /></span>
       <input
         v-model="query"
         class="qa-input"
@@ -105,21 +106,20 @@ async function add(entry?: CatalogEntry): Promise<void> {
 .bar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   background: var(--surface);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: var(--radius-pill);
-  padding: 0 0.5rem 0 1rem;
+  padding: 0 0.6rem 0 0.95rem;
   box-shadow: var(--shadow-sm);
 }
 .bar:focus-within {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-soft);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 .icon {
-  font-size: 1.3rem;
-  color: var(--primary);
-  font-weight: 700;
+  color: var(--accent);
+  display: inline-flex;
 }
 .qa-input {
   flex: 1;

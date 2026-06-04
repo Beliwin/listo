@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import AppHeader from "@/components/AppHeader.vue";
+import Icon from "@/components/Icon.vue";
 import ItemRow from "@/components/ItemRow.vue";
 import QuickAddBar from "@/components/QuickAddBar.vue";
 import SuggestionsPanel from "@/components/SuggestionsPanel.vue";
@@ -73,7 +74,9 @@ const clearTaken = () => clearChecked(database(), clock(), props.id);
   <div class="app-shell">
     <AppHeader>
       <template #left>
-        <button class="btn-icon" :aria-label="t('list.backToLists')" @click="router.push({ name: 'lists' })">‹</button>
+        <button class="btn-icon" :aria-label="t('list.backToLists')" @click="router.push({ name: 'lists' })">
+          <Icon name="back" />
+        </button>
       </template>
       <template #title><span class="ellipsis">{{ list?.name ?? "…" }}</span></template>
       <template #right>
@@ -86,12 +89,12 @@ const clearTaken = () => clearChecked(database(), clock(), props.id);
             :aria-expanded="menuOpen"
             @click="menuOpen = !menuOpen"
           >
-            ⋯
+            <Icon name="more" />
           </button>
           <button v-if="menuOpen" class="backdrop" aria-hidden="true" tabindex="-1" @click="menuOpen = false" />
           <div v-if="menuOpen" class="menu card" role="menu" @keydown.esc="menuOpen = false">
-            <button role="menuitem" @click="rename">✏️ {{ t("lists.rename") }}</button>
-            <button role="menuitem" class="danger" @click="removeList">🗑 {{ t("lists.remove") }}</button>
+            <button role="menuitem" @click="rename"><Icon name="edit" :size="17" /> {{ t("lists.rename") }}</button>
+            <button role="menuitem" class="danger" @click="removeList"><Icon name="trash" :size="17" /> {{ t("lists.remove") }}</button>
           </div>
         </div>
       </template>
@@ -147,39 +150,51 @@ const clearTaken = () => clearChecked(database(), clock(), props.id);
   padding: 0.3rem;
   min-width: 12rem;
   z-index: 30;
+  box-shadow: var(--shadow);
 }
 .menu button {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   text-align: left;
   background: transparent;
   border: none;
-  padding: 0.7rem 0.75rem;
+  padding: 0.65rem 0.7rem;
   border-radius: var(--radius-sm);
+  color: var(--muted);
 }
 .menu button:hover {
   background: var(--surface-2);
+  color: var(--fg);
 }
 .menu button.danger {
   color: var(--danger);
 }
 .aisle {
-  margin-top: 1.5rem;
+  margin-top: 1.6rem;
 }
 .aisle-head {
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-  margin: 0 0 0.4rem;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  margin: 0 0 0.5rem;
   display: flex;
   align-items: center;
   gap: 0.4rem;
+}
+.aisle-head span[aria-hidden] {
+  font-size: 0.95rem;
+  opacity: 0.85;
 }
 .taken-head {
   justify-content: space-between;
 }
 .taken-head h2 {
   font: inherit;
+  font-family: var(--font-body);
   margin: 0;
 }
 .clear {

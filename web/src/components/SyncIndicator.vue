@@ -31,7 +31,7 @@ const label = computed(() =>
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--primary);
+  background: var(--accent);
   flex: none;
 }
 .sync.offline .dot {

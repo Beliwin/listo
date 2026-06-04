@@ -3,6 +3,7 @@ import { computed, nextTick, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import AppHeader from "@/components/AppHeader.vue";
+import Icon from "@/components/Icon.vue";
 import SyncIndicator from "@/components/SyncIndicator.vue";
 import { useLiveQuery } from "@/db/live";
 import { createList } from "@/sync/mutations";
@@ -55,7 +56,9 @@ async function create(): Promise<void> {
     <AppHeader :title="t('lists.title')">
       <template #right>
         <SyncIndicator />
-        <router-link class="btn-icon" :to="{ name: 'settings' }" :aria-label="t('settings.title')">⚙️</router-link>
+        <router-link class="btn-icon" :to="{ name: 'settings' }" :aria-label="t('settings.title')">
+          <Icon name="settings" />
+        </router-link>
       </template>
     </AppHeader>
 
@@ -65,7 +68,7 @@ async function create(): Promise<void> {
           <button class="card list-card" @click="router.push({ name: 'list', params: { id: list.id } })">
             <span class="name">{{ list.name }}</span>
             <span class="count muted">{{ countLabel(counts[list.id] ?? 0) }}</span>
-            <span class="chev" aria-hidden="true">›</span>
+            <span class="chev" aria-hidden="true"><Icon name="chevron" :size="18" /></span>
           </button>
         </li>
       </ul>
@@ -86,7 +89,9 @@ async function create(): Promise<void> {
       </form>
     </main>
 
-    <button v-if="!creating" class="btn btn-primary fab" @click="startCreate">＋ {{ t("lists.create") }}</button>
+    <button v-if="!creating" class="btn btn-primary fab" @click="startCreate">
+      <Icon name="plus" :size="18" /> {{ t("lists.create") }}
+    </button>
   </div>
 </template>
 
@@ -97,7 +102,7 @@ async function create(): Promise<void> {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 .list-card {
   width: 100%;
@@ -105,23 +110,32 @@ async function create(): Promise<void> {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1rem 1.1rem;
-  min-height: 64px;
+  padding: 0.95rem 1.05rem;
+  min-height: 62px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease, transform 0.08s ease;
+}
+.list-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+.list-card:active {
+  transform: scale(0.99);
 }
 .list-card .name {
-  font-weight: 600;
-  font-size: 1.05rem;
+  font-family: var(--font-display);
+  font-weight: 480;
+  font-size: 1.15rem;
   flex: 1;
 }
 .list-card .count {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
 }
 .list-card .chev {
-  font-size: 1.5rem;
-  color: var(--muted);
+  color: var(--faint);
+  display: inline-flex;
 }
 .create {
-  padding: 0.75rem;
+  padding: 0.6rem;
 }
 .fab {
   position: fixed;
@@ -130,9 +144,9 @@ async function create(): Promise<void> {
   bottom: calc(1.25rem + env(safe-area-inset-bottom));
   box-shadow: var(--shadow);
   z-index: 15;
-  padding: 0 1.5rem;
-  min-height: 52px;
-  font-size: 1rem;
+  padding: 0 1.35rem;
+  min-height: 48px;
+  font-size: 0.95rem;
 }
 .fab:active {
   transform: translateX(-50%) scale(0.97);

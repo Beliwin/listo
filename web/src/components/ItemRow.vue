@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
+import Icon from "@/components/Icon.vue";
 import { useCategories } from "@/composables/useCategories";
 import type { LocalItem } from "@/db/dexie";
 import { currentLocale } from "@/i18n";
@@ -30,7 +31,7 @@ function onCategory(e: Event): void {
 </script>
 
 <template>
-  <li class="item" :class="{ checked: item.checked === 1 }">
+  <li class="item" :class="{ checked: item.checked === 1, open: expanded }">
     <button
       class="check"
       role="checkbox"
@@ -38,18 +39,18 @@ function onCategory(e: Event): void {
       :aria-label="item.name"
       @click="toggle"
     >
-      <svg v-if="item.checked === 1" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-        <path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
+      <Icon v-if="item.checked === 1" name="check" :size="15" />
     </button>
 
     <button class="body" @click="expanded = !expanded">
       <span class="name">{{ item.name }}</span>
-      <span v-if="item.qtyText" class="qty-pill">{{ item.qtyText }}</span>
-      <span v-if="item.addedBy" class="by muted">{{ item.addedBy }}</span>
+      <span v-if="item.qtyText" class="qty">{{ item.qtyText }}</span>
+      <span v-if="item.addedBy" class="by">{{ item.addedBy }}</span>
     </button>
 
-    <button class="btn-icon more" :aria-label="t('item.edit')" :aria-expanded="expanded" @click="expanded = !expanded">⋯</button>
+    <button class="btn-icon more" :aria-label="t('item.edit')" :aria-expanded="expanded" @click="expanded = !expanded">
+      <Icon name="down" :size="18" />
+    </button>
 
     <div v-if="expanded" class="editor">
       <label class="field-inline">
@@ -57,7 +58,6 @@ function onCategory(e: Event): void {
         <input
           class="input qty-input"
           type="text"
-          inputmode="text"
           :value="item.qtyText ?? ''"
           :placeholder="t('item.quantity')"
           @change="onQty"
@@ -75,7 +75,7 @@ function onCategory(e: Event): void {
           <option v-for="c in categories" :key="c.key" :value="c.key">{{ c.icon }} {{ t(`category.${c.key}`) }}</option>
         </select>
       </label>
-      <button class="btn btn-danger del" @click="remove">🗑 {{ t("item.remove") }}</button>
+      <button class="btn btn-danger del" @click="remove"><Icon name="trash" :size="16" /> {{ t("item.remove") }}</button>
     </div>
   </li>
 </template>
@@ -85,30 +85,33 @@ function onCategory(e: Event): void {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.15rem 0.25rem;
-  border-radius: var(--radius-sm);
+  column-gap: 0.3rem;
+  padding: 0.1rem 0;
+  border-bottom: 1px solid var(--line);
 }
-.item.checked .name {
-  text-decoration: line-through;
-  color: var(--muted);
+.item:last-child {
+  border-bottom: none;
+}
+.item.open {
+  border-bottom: none;
 }
 .check {
-  width: 30px;
-  height: 30px;
-  margin: 0 0.4rem;
-  border-radius: 9px;
-  border: 2px solid var(--border);
+  width: 24px;
+  height: 24px;
+  margin: 0 0.55rem 0 0.15rem;
+  border-radius: 7px;
+  border: 1.5px solid var(--line);
   background: var(--surface);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--primary-fg);
+  color: var(--accent-fg);
   flex: none;
+  transition: background 0.12s ease, border-color 0.12s ease;
 }
 .item.checked .check {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 .body {
   display: flex;
@@ -117,44 +120,64 @@ function onCategory(e: Event): void {
   background: transparent;
   border: none;
   text-align: left;
-  min-height: var(--tap);
+  min-height: 46px;
   padding: 0;
+  min-width: 0;
 }
 .name {
-  font-size: 1.02rem;
+  font-size: 1rem;
 }
-.qty-pill {
-  font-size: 0.78rem;
-  font-weight: 600;
-  background: var(--surface-2);
-  border-radius: var(--radius-pill);
-  padding: 0.1rem 0.5rem;
+.item.checked .name {
+  text-decoration: line-through;
+  text-decoration-color: var(--faint);
   color: var(--muted);
+}
+.qty {
+  font-size: 0.82rem;
+  color: var(--muted);
+  white-space: nowrap;
 }
 .by {
   font-size: 0.72rem;
+  color: var(--faint);
+  margin-left: auto;
+  white-space: nowrap;
+}
+.more :deep(svg) {
+  transition: transform 0.18s ease;
+}
+.item.open .more :deep(svg) {
+  transform: rotate(180deg);
 }
 .editor {
   grid-column: 1 / -1;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.5rem 0.5rem 0.75rem 3rem;
+  gap: 0.5rem;
+  padding: 0.1rem 0.1rem 0.85rem 2.55rem;
   flex-wrap: wrap;
 }
 .field-inline {
   display: inline-flex;
+  flex: 1 1 auto;
+}
+.field-inline:first-of-type {
+  flex: 0 0 6.5rem;
 }
 .qty-input {
-  width: 8rem;
-  min-height: 40px;
+  width: 100%;
+  min-height: 38px;
 }
 .cat-select {
-  width: auto;
-  min-width: 9rem;
-  min-height: 40px;
+  width: 100%;
+  min-width: 8rem;
+  min-height: 38px;
 }
 .del {
+  flex: 0 0 auto;
   margin-left: auto;
+  min-height: 38px;
+  padding: 0 0.85rem;
+  font-size: 0.9rem;
 }
 </style>

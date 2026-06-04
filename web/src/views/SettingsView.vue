@@ -2,6 +2,7 @@
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import AppHeader from "@/components/AppHeader.vue";
+import Icon from "@/components/Icon.vue";
 import type { AppLocale } from "@/i18n";
 import { useSessionStore } from "@/stores/session";
 import { useSettingsStore } from "@/stores/settings";
@@ -59,12 +60,12 @@ async function logout(): Promise<void> {
 
       <nav class="card links">
         <router-link class="link" :to="{ name: 'categories' }">
-          <span>🗂️ {{ t("settings.categoriesOrder") }}</span>
-          <span class="chev" aria-hidden="true">›</span>
+          <span class="lbl"><Icon name="tag" :size="18" /> {{ t("settings.categoriesOrder") }}</span>
+          <span class="chev" aria-hidden="true"><Icon name="chevron" :size="18" /></span>
         </router-link>
         <router-link class="link" :to="{ name: 'catalog' }">
-          <span>📒 {{ t("settings.catalog") }}</span>
-          <span class="chev" aria-hidden="true">›</span>
+          <span class="lbl"><Icon name="list" :size="18" /> {{ t("settings.catalog") }}</span>
+          <span class="chev" aria-hidden="true"><Icon name="chevron" :size="18" /></span>
         </router-link>
       </nav>
 
@@ -110,7 +111,7 @@ async function logout(): Promise<void> {
 .seg-btn.active {
   background: var(--surface);
   box-shadow: var(--shadow-sm);
-  color: var(--primary);
+  color: var(--accent);
 }
 .links {
   display: flex;
@@ -130,9 +131,18 @@ async function logout(): Promise<void> {
 .link:hover {
   background: var(--surface-2);
 }
-.link .chev {
+.link .lbl {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   color: var(--muted);
-  font-size: 1.3rem;
+}
+.link:hover .lbl {
+  color: var(--fg);
+}
+.link .chev {
+  color: var(--faint);
+  display: inline-flex;
 }
 .logout {
   align-self: flex-start;
