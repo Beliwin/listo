@@ -102,6 +102,11 @@ export default {
     about: "À propos",
     install: "Installer l'application",
   },
+  update: {
+    available: "Une nouvelle version est disponible.",
+    action: "Mettre à jour",
+    later: "Plus tard",
+  },
   install: {
     title: "Installer Listo",
     ios: "Sur iPhone : appuie sur Partager, puis « Sur l'écran d'accueil ».",

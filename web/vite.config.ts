@@ -9,9 +9,12 @@ export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
-      registerType: "autoUpdate",
-      // External register script (not inline) keeps script-src 'self' CSP intact.
-      injectRegister: "script",
+      // "prompt": a freshly-built SW waits until the user taps "Update"
+      // (see UpdatePrompt.vue), instead of silently swapping assets mid-session.
+      registerType: "prompt",
+      // The app registers the SW itself via `virtual:pwa-register/vue` (bundled,
+      // same-origin), so the script-src 'self' CSP stays intact.
+      injectRegister: false,
       includeAssets: ["favicon.svg", "apple-touch-icon.png"],
       manifest: {
         name: "Listo",

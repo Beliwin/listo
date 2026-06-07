@@ -102,6 +102,11 @@ export default {
     about: "About",
     install: "Install the app",
   },
+  update: {
+    available: "A new version is available.",
+    action: "Update",
+    later: "Later",
+  },
   install: {
     title: "Install Listo",
     ios: "On iPhone: tap Share, then “Add to Home Screen”.",
