@@ -1,3 +1,9 @@
+## [0.4.0](https://github.com/Beliwin/listo/compare/v0.3.0...v0.4.0) (2026-06-07)
+
+### Features
+
+* **web:** in-app "update available" prompt ([cbd45be](https://github.com/Beliwin/listo/commit/cbd45be392cb03eb23e64ad4c56c9673a4ad3c60))
+
 ## [0.3.0](https://github.com/Beliwin/listo/compare/v0.2.1...v0.3.0) (2026-06-07)
 
 ### Features
