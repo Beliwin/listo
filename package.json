@@ -10,6 +10,7 @@
     "node": ">=24"
   },
   "scripts": {
+    "dev": "trap 'kill 0' EXIT; pnpm --filter @listo/server dev:env & pnpm --filter @listo/web dev & wait",
     "test": "pnpm -r --workspace-concurrency=1 --if-present test",
     "typecheck": "pnpm -r --if-present typecheck",
     "build": "pnpm -r --if-present build",
