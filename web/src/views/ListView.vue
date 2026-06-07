@@ -13,6 +13,7 @@ import { category } from "@/catalog/categories";
 import { useCategories } from "@/composables/useCategories";
 import { useLiveQuery } from "@/db/live";
 import type { LocalItem } from "@/db/dexie";
+import { useSettingsStore } from "@/stores/settings";
 import { clearChecked, deleteList, renameList } from "@/sync/mutations";
 import { byRank } from "@/sync/rank";
 import { clock, database } from "@/sync/service";
@@ -20,6 +21,7 @@ import { clock, database } from "@/sync/service";
 const props = defineProps<{ id: string }>();
 const { t } = useI18n();
 const router = useRouter();
+const settings = useSettingsStore();
 
 const list = useLiveQuery(() => database().lists.get(props.id), undefined);
 const items = useLiveQuery(
@@ -67,6 +69,10 @@ async function removeList(): Promise<void> {
   await deleteList(database(), clock(), props.id);
   await router.replace({ name: "lists" });
 }
+function startShopping(): void {
+  menuOpen.value = false;
+  void router.push({ name: "shop", params: { id: props.id } });
+}
 const clearTaken = () => clearChecked(database(), clock(), props.id);
 </script>
 
@@ -81,6 +87,14 @@ const clearTaken = () => clearChecked(database(), clock(), props.id);
       <template #title><span class="ellipsis">{{ list?.name ?? "…" }}</span></template>
       <template #right>
         <SyncIndicator />
+        <button
+          class="btn-icon"
+          :aria-label="settings.layout === 'grid' ? t('list.viewList') : t('list.viewGrid')"
+          :aria-pressed="settings.layout === 'grid'"
+          @click="settings.toggleLayout()"
+        >
+          <Icon :name="settings.layout === 'grid' ? 'rows' : 'grid'" />
+        </button>
         <div class="menu-wrap">
           <button
             class="btn-icon"
@@ -93,6 +107,7 @@ const clearTaken = () => clearChecked(database(), clock(), props.id);
           </button>
           <button v-if="menuOpen" class="backdrop" aria-hidden="true" tabindex="-1" @click="menuOpen = false" />
           <div v-if="menuOpen" class="menu card" role="menu" @keydown.esc="menuOpen = false">
+            <button role="menuitem" @click="startShopping"><Icon name="cart" :size="17" /> {{ t("list.shop") }}</button>
             <button role="menuitem" @click="rename"><Icon name="edit" :size="17" /> {{ t("lists.rename") }}</button>
             <button role="menuitem" class="danger" @click="removeList"><Icon name="trash" :size="17" /> {{ t("lists.remove") }}</button>
           </div>
@@ -110,21 +125,23 @@ const clearTaken = () => clearChecked(database(), clock(), props.id);
         {{ t("list.empty") }}
       </p>
 
-      <section v-for="g in groups" :key="g.key" class="aisle">
-        <h2 class="aisle-head"><span aria-hidden="true">{{ g.icon }}</span> {{ t(`category.${g.key}`) }}</h2>
-        <ul class="rows">
-          <ItemRow v-for="it in g.items" :key="it.id" :item="it" :category-key="g.key" />
-        </ul>
-      </section>
+      <TransitionGroup name="aisle" tag="div">
+        <section v-for="g in groups" :key="g.key" class="aisle">
+          <h2 class="aisle-head"><span aria-hidden="true">{{ g.icon }}</span> {{ t(`category.${g.key}`) }}</h2>
+          <TransitionGroup name="item" tag="ul" class="rows" :class="`rows-${settings.layout}`">
+            <ItemRow v-for="it in g.items" :key="it.id" :item="it" :category-key="g.key" :view="settings.layout" />
+          </TransitionGroup>
+        </section>
+      </TransitionGroup>
 
       <section v-if="taken.length" class="aisle taken">
         <div class="aisle-head taken-head">
           <h2>{{ t("list.taken", { n: taken.length }) }}</h2>
           <button class="btn btn-ghost clear" @click="clearTaken">{{ t("list.clearTaken") }}</button>
         </div>
-        <ul class="rows">
+        <TransitionGroup name="item" tag="ul" class="rows">
           <ItemRow v-for="it in taken" :key="it.id" :item="it" :category-key="catKeyOf(it)" />
-        </ul>
+        </TransitionGroup>
       </section>
     </main>
   </div>
@@ -212,8 +229,62 @@ const clearTaken = () => clearChecked(database(), clock(), props.id);
   list-style: none;
   margin: 0;
   padding: 0;
+}
+.rows-list {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
+}
+.rows-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  gap: 0.6rem;
+}
+
+/* ── Animations ───────────────────────────────────────────────────────────── */
+/* Items: fade + slide in, collapse out, and FLIP-move when reordered. */
+.item-enter-active {
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+.item-leave-active {
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  position: absolute;
+  width: 100%;
+}
+.item-enter-from {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+.item-leave-to {
+  opacity: 0;
+  transform: scale(0.96);
+}
+.item-move {
+  transition: transform 0.24s ease;
+}
+/* `position:absolute` on leave needs a positioned, non-clipping container. */
+.rows {
+  position: relative;
+}
+
+/* Aisles fade in as they appear / disappear. */
+.aisle-enter-active,
+.aisle-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.aisle-enter-from,
+.aisle-leave-to {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item-enter-active,
+  .item-leave-active,
+  .item-move,
+  .aisle-enter-active,
+  .aisle-leave-active {
+    transition: none;
+  }
 }
 </style>
