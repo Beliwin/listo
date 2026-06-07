@@ -1,3 +1,10 @@
+## [0.3.0](https://github.com/Beliwin/listo/compare/v0.2.1...v0.3.0) (2026-06-07)
+
+### Features
+
+* household loyalty cards with offline barcode and scanner ([f93153d](https://github.com/Beliwin/listo/commit/f93153dc5b3f8fdac4d9990a42163e4916b0d7e7))
+* **web:** per-item emojis, grid/list view, shopping mode, animations ([3748139](https://github.com/Beliwin/listo/commit/37481392725a6ae96378940057402f48683b58b9))
+
 ## [0.2.1](https://github.com/Beliwin/listo/compare/v0.2.0...v0.2.1) (2026-06-04)
 
 ### Bug Fixes
