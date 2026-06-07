@@ -183,6 +183,7 @@ export function snapshot(db: Db, clock: ServerClock): SnapshotResponse {
     items: store.readSnapshotEntities(db, "item", ENTITY_SPECS.item),
     categories: store.readSnapshotEntities(db, "category", ENTITY_SPECS.category),
     catalog: store.readSnapshotEntities(db, "catalog", ENTITY_SPECS.catalog),
+    cards: store.readSnapshotEntities(db, "card", ENTITY_SPECS.card),
   };
 }
 

@@ -138,4 +138,22 @@ export const MIGRATIONS: Migration[] = [
       ALTER TABLE items ADD COLUMN qty_text TEXT;
     `,
   },
+  {
+    name: "005_cards",
+    sql: /* sql */ `
+      -- Household loyalty cards: a store name + a card number rendered as a
+      -- barcode at the till. Synced like any other entity (per-field LWW).
+      CREATE TABLE cards (
+        id          TEXT PRIMARY KEY,
+        label       TEXT NOT NULL DEFAULT '',
+        code        TEXT NOT NULL DEFAULT '',
+        format      TEXT NOT NULL DEFAULT 'auto',
+        color       TEXT,
+        rank        TEXT NOT NULL DEFAULT '',
+        deleted     INTEGER NOT NULL DEFAULT 0,
+        deleted_hlc TEXT,
+        updated_seq INTEGER NOT NULL DEFAULT 0
+      );
+    `,
+  },
 ];

@@ -53,6 +53,17 @@ export interface LocalCatalogItem {
   deletedHlc: string | null;
 }
 
+export interface LocalCard {
+  id: string;
+  label: string;
+  code: string;
+  format: string;
+  color: string | null;
+  rank: string;
+  deleted: 0 | 1;
+  deletedHlc: string | null;
+}
+
 export interface LocalFieldClock {
   /** `${entity}|${entityId}|${field}` */
   id: string;
@@ -88,6 +99,7 @@ export class ListoDB extends Dexie {
   items!: Table<LocalItem, string>;
   categories!: Table<LocalCategory, string>;
   catalog!: Table<LocalCatalogItem, string>;
+  cards!: Table<LocalCard, string>;
   fieldClocks!: Table<LocalFieldClock, string>;
   outbox!: Table<OutboxEntry, string>;
   meta!: Table<MetaEntry, string>;
@@ -102,6 +114,10 @@ export class ListoDB extends Dexie {
       fieldClocks: "id, [entity+entityId]",
       outbox: "mutationId, status, lane, localSeq",
       meta: "key",
+    });
+    // v2 adds the synced loyalty-cards store (existing stores carry over).
+    this.version(2).stores({
+      cards: "id, rank, deleted",
     });
   }
 }
@@ -118,6 +134,8 @@ export function tableForEntity(db: ListoDB, entity: EntityKind): EntityTable {
       return db.categories as unknown as EntityTable;
     case "catalog":
       return db.catalog as unknown as EntityTable;
+    case "card":
+      return db.cards as unknown as EntityTable;
   }
 }
 

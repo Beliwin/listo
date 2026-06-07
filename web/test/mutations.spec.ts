@@ -2,13 +2,16 @@ import { catalogItemId } from "@listo/shared";
 import { afterEach, describe, expect, it } from "vitest";
 import { loadClientClock } from "@/sync/clock";
 import {
+  addCard,
   addItem,
+  deleteCard,
   deleteItem,
   setCatalogCategory,
   setCategorySortOrders,
   setChecked,
   setQty,
   setQtyText,
+  updateCard,
 } from "@/sync/mutations";
 import { pending, pendingCount } from "@/sync/outbox";
 import { cleanupDbs, freshDb } from "./db-helper";
@@ -83,5 +86,27 @@ describe("mutations", () => {
     ]);
     expect((await db.categories.get("boissons"))?.sortOrder).toBe(0);
     expect((await db.categories.get("cremerie"))?.sortOrder).toBe(1);
+  });
+
+  it("addCard / updateCard / deleteCard write the card and enqueue mutations", async () => {
+    const db = freshDb();
+    const clock = await loadClientClock(db, () => 1000);
+    const id = await addCard(db, clock, { label: "Carrefour", code: "1234567890123", rank: "a" });
+    expect(await db.cards.get(id)).toMatchObject({
+      label: "Carrefour",
+      code: "1234567890123",
+      format: "auto",
+      deleted: 0,
+    });
+
+    await updateCard(db, clock, id, { label: "Carrefour Market", color: "#0050a0" });
+    expect(await db.cards.get(id)).toMatchObject({ label: "Carrefour Market", color: "#0050a0" });
+
+    await deleteCard(db, clock, id);
+    expect((await db.cards.get(id))?.deleted).toBe(1);
+
+    const out = await pending(db);
+    expect(out.every((e) => e.entity === "card" && e.lane === "card")).toBe(true);
+    expect(await pendingCount(db)).toBe(3); // add + update + delete
   });
 });

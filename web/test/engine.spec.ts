@@ -52,6 +52,7 @@ class StubApi implements SyncApi {
         items: [],
         categories: [],
         catalog: [],
+      cards: [],
       }
     );
   }
@@ -114,6 +115,7 @@ describe("SyncEngine.pull", () => {
       ],
       categories: [],
       catalog: [],
+      cards: [],
     };
     api.pullQueue.push({ changes: [], cursor: 0, epoch: 1, resetRequired: true, serverHlc: SERVER_HLC });
     await engine.pull();
@@ -143,6 +145,7 @@ describe("SyncEngine.applyEvent", () => {
       items: [],
       categories: [],
       catalog: [],
+      cards: [],
     };
     await engine.applyEvent({ type: "reset", epoch: 3 });
     expect((await db.lists.get("l1"))?.name).toBe("Courses");

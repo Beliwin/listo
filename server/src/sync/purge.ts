@@ -6,6 +6,7 @@ const ENTITY_TABLES: [entity: string, table: string][] = [
   ["item", "items"],
   ["category", "categories"],
   ["catalog", "catalog"],
+  ["card", "cards"],
 ];
 
 export interface PurgeOptions {

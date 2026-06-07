@@ -221,6 +221,42 @@ describe("purchase history & suggestions (Jalon 9)", () => {
   });
 });
 
+describe("loyalty cards entity", () => {
+  function getCard(db: Db, id: string) {
+    return db.prepare("SELECT * FROM cards WHERE id = ?").get(id) as
+      | { label: string; code: string; format: string; color: string | null; deleted: number }
+      | undefined;
+  }
+
+  it("creates, edits per-field, and tombstones a card; snapshot includes it", () => {
+    const { db, clock } = setup();
+    const id = "card-1";
+    push(db, clock, "A", [
+      mut("card", id, {
+        label: ["Carrefour", hlc(100, 0)],
+        code: ["1234567890123", hlc(100, 1)],
+        format: ["auto", hlc(100, 2)],
+      }),
+    ]);
+    expect(getCard(db, id)).toMatchObject({ label: "Carrefour", code: "1234567890123", format: "auto", deleted: 0 });
+
+    // The card shows up in a snapshot with its fields.
+    const snap = snapshot(db, clock);
+    const entity = snap.cards.find((e) => e.id === id);
+    expect(entity?.fields.label).toBe("Carrefour");
+    expect(entity?.fields.code).toBe("1234567890123");
+
+    // Per-field LWW: a concurrent label edit and color edit both stick.
+    push(db, clock, "A", [mut("card", id, { label: ["Carrefour Market", hlc(200, 0, "A")] })]);
+    push(db, clock, "B", [mut("card", id, { color: ["#0050a0", hlc(150, 0, "B")] })]);
+    expect(getCard(db, id)).toMatchObject({ label: "Carrefour Market", color: "#0050a0" });
+
+    // Delete tombstones it.
+    push(db, clock, "A", [mut("card", id, {}, { deleted: hlc(300, 0, "A") })]);
+    expect(getCard(db, id)?.deleted).toBe(1);
+  });
+});
+
 describe("convergence (order independence)", () => {
   it("reaches the same state regardless of mutation order", () => {
     const mutations: Array<[string, Mutation]> = [

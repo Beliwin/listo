@@ -14,7 +14,7 @@ export interface EntitySpec {
   fields: Record<string, FieldSpec>;
 }
 
-export const ENTITY_KINDS: readonly EntityKind[] = ["list", "item", "category", "catalog"] as const;
+export const ENTITY_KINDS: readonly EntityKind[] = ["list", "item", "category", "catalog", "card"] as const;
 
 /**
  * Maps each entity's logical (wire) field names to its SQLite columns. Table and
@@ -61,6 +61,16 @@ export const ENTITY_SPECS: Record<EntityKind, EntitySpec> = {
       categoryKey: { col: "category_key", kind: "text" },
       defaultUnitKey: { col: "default_unit_key", kind: "text" },
       useCount: { col: "use_count", kind: "int" },
+    },
+  },
+  card: {
+    table: "cards",
+    fields: {
+      label: { col: "label", kind: "text" },
+      code: { col: "code", kind: "text" },
+      format: { col: "format", kind: "text" },
+      color: { col: "color", kind: "text" },
+      rank: { col: "rank", kind: "text" },
     },
   },
 };

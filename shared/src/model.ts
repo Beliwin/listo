@@ -73,6 +73,29 @@ export interface Unit {
   key: string;
 }
 
+/**
+ * A store loyalty card, shared across the household instance. `code` is the raw
+ * card number; `format` picks how to render it at the till ("auto" derives it
+ * from the code: 13 digits → EAN-13, else Code128). `color` is a cosmetic accent.
+ */
+export interface Card {
+  id: string;
+  /** Store name, e.g. "Carrefour". */
+  label: string;
+  /** The raw card number/barcode payload. */
+  code: string;
+  /** "auto" | "ean13" | "code128". */
+  format: string;
+  /** Optional accent color (hex), for the card tile. */
+  color: string | null;
+  rank: string;
+  deleted: boolean;
+}
+
+/** The fields of a Card that are independently mergeable under per-field LWW. */
+export const CARD_LWW_FIELDS = ["label", "code", "format", "color", "rank"] as const;
+export type CardField = (typeof CARD_LWW_FIELDS)[number];
+
 /** The fields of an Item that are independently mergeable under per-field LWW. */
 export const ITEM_LWW_FIELDS = [
   "name",

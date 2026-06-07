@@ -53,6 +53,8 @@ function defaultRow(entity: EntityKind, id: string): Row {
         defaultUnitKey: null,
         useCount: 0,
       };
+    case "card":
+      return { ...base, label: "", code: "", format: "auto", color: null, rank: "" };
   }
 }
 
@@ -114,19 +116,21 @@ export async function applyChanges(db: ListoDB, changes: Change[]): Promise<void
 export async function applySnapshot(db: ListoDB, snap: SnapshotResponse): Promise<void> {
   await db.transaction(
     "rw",
-    [db.lists, db.items, db.categories, db.catalog, db.fieldClocks, db.meta],
+    [db.lists, db.items, db.categories, db.catalog, db.cards, db.fieldClocks, db.meta],
     async () => {
       await Promise.all([
         db.lists.clear(),
         db.items.clear(),
         db.categories.clear(),
         db.catalog.clear(),
+        db.cards.clear(),
         db.fieldClocks.clear(),
       ]);
       await ingest(db, "list", snap.lists);
       await ingest(db, "item", snap.items);
       await ingest(db, "category", snap.categories);
       await ingest(db, "catalog", snap.catalog);
+      await ingest(db, "card", snap.cards);
       await db.meta.put({ key: "cursor", value: { seq: snap.cursor, epoch: snap.epoch } });
     },
   );

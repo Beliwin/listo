@@ -3,6 +3,7 @@ import { computed, nextTick, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import AppHeader from "@/components/AppHeader.vue";
+import CardsSection from "@/components/CardsSection.vue";
 import Icon from "@/components/Icon.vue";
 import SyncIndicator from "@/components/SyncIndicator.vue";
 import { useLiveQuery } from "@/db/live";
@@ -87,6 +88,8 @@ async function create(): Promise<void> {
           @blur="create"
         />
       </form>
+
+      <CardsSection />
     </main>
 
     <button v-if="!creating" class="btn btn-primary fab" @click="startCreate">

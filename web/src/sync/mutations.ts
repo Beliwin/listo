@@ -203,3 +203,38 @@ export async function setCategorySortOrders(
     await commit(db, clock, "category", e.key, { sortOrder: e.sortOrder });
   }
 }
+
+// ── Loyalty cards (synced household entity) ───────────────────────────────────
+
+export interface AddCardInput {
+  label: string;
+  code: string;
+  format?: string;
+  color?: string | null;
+  rank: string;
+}
+
+export async function addCard(db: ListoDB, clock: ClientClock, input: AddCardInput): Promise<string> {
+  const id = newId();
+  await commit(db, clock, "card", id, {
+    label: input.label,
+    code: input.code,
+    format: input.format ?? "auto",
+    color: input.color ?? null,
+    rank: input.rank,
+  });
+  return id;
+}
+
+export async function updateCard(
+  db: ListoDB,
+  clock: ClientClock,
+  id: string,
+  fields: Partial<{ label: string; code: string; format: string; color: string | null; rank: string }>,
+): Promise<void> {
+  await commit(db, clock, "card", id, fields as Record<string, unknown>);
+}
+
+export async function deleteCard(db: ListoDB, clock: ClientClock, id: string): Promise<void> {
+  await commit(db, clock, "card", id, {}, { deleted: true });
+}

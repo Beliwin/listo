@@ -11,7 +11,7 @@
 
 import type { Hlc } from "./hlc.js";
 
-export type EntityKind = "list" | "item" | "catalog" | "category";
+export type EntityKind = "list" | "item" | "catalog" | "category" | "card";
 
 /** A single field-level change carrying its own HLC (per-field LWW). */
 export interface FieldDelta {
@@ -107,6 +107,7 @@ export interface SnapshotResponse {
   items: SnapshotEntity[];
   categories: SnapshotEntity[];
   catalog: SnapshotEntity[];
+  cards: SnapshotEntity[];
 }
 
 /** An entity row in a snapshot: its current field values + per-field HLCs. */
