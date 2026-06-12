@@ -48,6 +48,16 @@ The image is published multi-arch (amd64 + arm64) at `ghcr.io/beliwin/listo`. Yo
 lives in the `listo-data` volume (the SQLite database plus its WAL sidecars).
 
 > [!IMPORTANT]
+> **Upgrading from a single-password instance (pre-0.6)?** Listo no longer uses
+> `INSTANCE_PASSWORD` — it now has per-user accounts. On first boot of the new
+> version your existing database has no accounts yet, so you **must** set
+> `ADMIN_USERNAME` and `ADMIN_PASSWORD` (the old `INSTANCE_PASSWORD` is ignored, and
+> the container refuses to start without them). They create the first admin, then
+> are ignored on every later boot. All your lists/items/cards are preserved. Every
+> device signs in once after the upgrade (old sessions are invalidated). From
+> **Settings → Manage accounts** the admin invites everyone else.
+
+> [!IMPORTANT]
 > **Never expose Listo over plain HTTP on the internet.** Put it behind a reverse proxy
 > with TLS (e.g. Nginx Proxy Manager + Let's Encrypt) and set `TRUST_PROXY=true`.
 
