@@ -5,7 +5,7 @@ import { useRouter } from "vue-router";
 import Icon from "@/components/Icon.vue";
 import { CATALOG_SEED } from "@/catalog/seed";
 import { category } from "@/catalog/categories";
-import { itemEmoji } from "@/catalog/emoji";
+import { itemIcon } from "@/catalog/icons";
 import { useCategories } from "@/composables/useCategories";
 import { vibrate } from "@/composables/useHaptics";
 import type { LocalItem } from "@/db/dexie";
@@ -88,7 +88,7 @@ const exit = () => router.push({ name: "list", params: { id: props.id } });
             <li v-for="it in g.items" :key="it.id">
               <button class="shop-row" :class="{ taken: it.checked === 1 }" @click="toggle(it)">
                 <span class="box"><Icon v-if="it.checked === 1" name="check" :size="22" /></span>
-                <span class="emoji" aria-hidden="true">{{ itemEmoji(it.name, g.key, it.catalogId) }}</span>
+                <span class="emoji" aria-hidden="true" v-html="itemIcon(it.name, g.key, it.catalogId)"></span>
                 <span class="label">{{ it.name }}</span>
                 <span v-if="it.qtyText" class="qty">{{ it.qtyText }}</span>
               </button>
@@ -174,7 +174,16 @@ const exit = () => router.push({ name: "list", params: { id: props.id } });
 .shop-row .emoji {
   font-size: 1.5rem;
   flex: none;
-  line-height: 1;
+  line-height: 0;
+  color: var(--accent);
+}
+.shop-row .emoji :deep(svg) {
+  width: 1em;
+  height: 1em;
+  display: block;
+}
+.shop-row.taken .emoji {
+  color: var(--muted);
 }
 .label {
   font-size: 1.05rem;

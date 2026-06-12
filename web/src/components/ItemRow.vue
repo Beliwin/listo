@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import Icon from "@/components/Icon.vue";
-import { itemEmoji } from "@/catalog/emoji";
+import { itemIcon } from "@/catalog/icons";
 import { useCategories } from "@/composables/useCategories";
 import { vibrate } from "@/composables/useHaptics";
 import type { LocalItem } from "@/db/dexie";
@@ -17,7 +17,7 @@ const { t } = useI18n();
 const categories = useCategories();
 const expanded = ref(false);
 
-const emoji = computed(() => itemEmoji(props.item.name, props.categoryKey, props.item.catalogId));
+const icon = computed(() => itemIcon(props.item.name, props.categoryKey, props.item.catalogId));
 
 function toggle(): void {
   vibrate(props.item.checked === 0 ? "success" : "tick");
@@ -52,7 +52,7 @@ function onCategory(e: Event): void {
     </button>
 
     <button class="body" @click="expanded = !expanded">
-      <span class="emoji" aria-hidden="true">{{ emoji }}</span>
+      <span class="emoji" aria-hidden="true" v-html="icon"></span>
       <span class="name">{{ item.name }}</span>
       <span v-if="item.qtyText" class="qty">{{ item.qtyText }}</span>
       <span v-if="item.addedBy && view === 'list'" class="by">{{ item.addedBy }}</span>
@@ -114,7 +114,16 @@ function onCategory(e: Event): void {
 }
 .emoji {
   flex: none;
-  line-height: 1;
+  line-height: 0;
+  color: var(--accent);
+}
+.emoji :deep(svg) {
+  width: 1em;
+  height: 1em;
+  display: block;
+}
+.item.checked .emoji {
+  color: var(--muted);
 }
 .name {
   font-size: 1rem;
