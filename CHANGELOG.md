@@ -1,3 +1,14 @@
+## [0.5.0](https://github.com/Beliwin/listo/compare/v0.4.0...v0.5.0) (2026-06-12)
+
+### Features
+
+* **catalog:** auto-classify new items and expand product catalog ([426055d](https://github.com/Beliwin/listo/commit/426055dbc8b7518047f017d2bada98cf7071b119))
+* **web:** use local Tabler/MDI line icons for products ([d3ee93b](https://github.com/Beliwin/listo/commit/d3ee93b8489b17c4da2e422b89fc12feb5f0274e))
+
+### Bug Fixes
+
+* **web:** avoid nested button in loyalty card tile ([ce45b0b](https://github.com/Beliwin/listo/commit/ce45b0b110e9c6c10b125a7a9aa1d0617fc5eaad))
+
 ## [0.4.0](https://github.com/Beliwin/listo/compare/v0.3.0...v0.4.0) (2026-06-07)
 
 ### Features
