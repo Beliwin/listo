@@ -1,3 +1,9 @@
+## [0.6.3](https://github.com/Beliwin/listo/compare/v0.6.2...v0.6.3) (2026-06-12)
+
+### Bug Fixes
+
+* **web:** keep showing quick-add suggestions after clicking one ([18b5efc](https://github.com/Beliwin/listo/commit/18b5efcd194b38bd9d525bafe3150e0482a5bba9))
+
 ## [0.6.2](https://github.com/Beliwin/listo/compare/v0.6.1...v0.6.2) (2026-06-12)
 
 ## [0.6.1](https://github.com/Beliwin/listo/compare/v0.6.0...v0.6.1) (2026-06-12)
