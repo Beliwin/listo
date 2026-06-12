@@ -1,3 +1,9 @@
+## [0.6.0](https://github.com/Beliwin/listo/compare/v0.5.0...v0.6.0) (2026-06-12)
+
+### Features
+
+* **auth:** replace shared instance password with per-user accounts ([9548215](https://github.com/Beliwin/listo/commit/95482152b500ade3b77c0b224c8d5d623b0253e6))
+
 ## [0.5.0](https://github.com/Beliwin/listo/compare/v0.4.0...v0.5.0) (2026-06-12)
 
 ### Features
