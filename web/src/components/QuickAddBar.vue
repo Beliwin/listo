@@ -59,8 +59,12 @@ async function add(entry?: CatalogEntry): Promise<void> {
     addedBy: session.username || null,
   });
 
+  // Keep `open` as-is: clicking a suggestion keeps focus on the input (the
+  // option uses mousedown.prevent), so the @focus handler won't fire again.
+  // Forcing open=false here would suppress suggestions for every subsequent
+  // keystroke until the field is blurred and refocused. Clearing the query
+  // already hides the dropdown (no matches), and re-typing shows it again.
   query.value = "";
-  open.value = false;
   emit("added", id);
 }
 </script>
