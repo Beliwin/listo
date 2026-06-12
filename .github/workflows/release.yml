@@ -4,6 +4,12 @@ name: Release
 # the next version, tag it, write the changelog, cut a GitHub release, then build
 # and push the multi-arch image to GHCR with the matching semver tags.
 # No manual tagging. (The changelog commit it makes carries [skip ci].)
+#
+# The image is built per-architecture on NATIVE runners in parallel (amd64 on
+# ubuntu-latest, arm64 on ubuntu-24.04-arm) — no QEMU emulation, which is what
+# made arm64 (native better-sqlite3 compile) crawl. Each arch is pushed by
+# digest, then a final job stitches them into one multi-arch manifest with the
+# release tags.
 on:
   push:
     branches: [main]
@@ -18,14 +24,21 @@ concurrency:
   group: release
   cancel-in-progress: false
 
-# Belt-and-braces for the Docker actions, which still target node20 until they
-# ship a node24 release; the rest are already on node24 (v6+).
 env:
+  IMAGE: ghcr.io/beliwin/listo
+  # Belt-and-braces for the Docker actions, which still target node20 until they
+  # ship a node24 release; the rest are already on node24 (v6+).
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
+  # ── Validate, then let semantic-release decide if a version should be cut ──
   release:
     runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.semantic.outputs.new_release_published }}
+      version: ${{ steps.semantic.outputs.new_release_version }}
+      major: ${{ steps.semantic.outputs.new_release_major_version }}
+      minor: ${{ steps.semantic.outputs.new_release_minor_version }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -52,27 +65,83 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── Build & publish the image only when a release was actually cut ──
-      - if: steps.semantic.outputs.new_release_published == 'true'
-        uses: docker/setup-qemu-action@v3
-      - if: steps.semantic.outputs.new_release_published == 'true'
-        uses: docker/setup-buildx-action@v3
-      - if: steps.semantic.outputs.new_release_published == 'true'
-        uses: docker/login-action@v3
+  # ── Build each arch on its own native runner, push by digest (no tags yet) ──
+  image:
+    needs: release
+    if: needs.release.outputs.published == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            arch: amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - if: steps.semantic.outputs.new_release_published == 'true'
+
+      - id: build
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ghcr.io/beliwin/listo:latest
-            ghcr.io/beliwin/listo:${{ steps.semantic.outputs.new_release_version }}
-            ghcr.io/beliwin/listo:${{ steps.semantic.outputs.new_release_major_version }}.${{ steps.semantic.outputs.new_release_minor_version }}
-            ghcr.io/beliwin/listo:${{ steps.semantic.outputs.new_release_major_version }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          platforms: ${{ matrix.platform }}
+          outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          # Scope the GHA cache per arch so the two matrix legs don't clobber it.
+          cache-from: type=gha,scope=${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.arch }}
+
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: digest-${{ matrix.arch }}
+          path: /tmp/digests/*
+          retention-days: 1
+
+  # ── Stitch the per-arch digests into one multi-arch manifest with the tags ──
+  manifest:
+    needs: [release, image]
+    if: needs.release.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digest-*
+          merge-multiple: true
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and push the multi-arch manifest
+        working-directory: /tmp/digests
+        env:
+          VERSION: ${{ needs.release.outputs.version }}
+          MAJOR: ${{ needs.release.outputs.major }}
+          MINOR: ${{ needs.release.outputs.minor }}
+        run: |
+          docker buildx imagetools create \
+            -t "$IMAGE:latest" \
+            -t "$IMAGE:$VERSION" \
+            -t "$IMAGE:$MAJOR.$MINOR" \
+            -t "$IMAGE:$MAJOR" \
+            $(printf "$IMAGE@sha256:%s " *)
+
+      - name: Inspect
+        run: docker buildx imagetools inspect "$IMAGE:${{ needs.release.outputs.version }}"
