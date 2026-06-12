@@ -1,25 +1,34 @@
 import { describe, expect, it } from "vitest";
-import { createPasswordVerifier } from "../src/auth/password.js";
+import { hashPassword, verifyPassword } from "../src/auth/password.js";
 import { createSessions } from "../src/auth/session.js";
 import { createLoginThrottle } from "../src/auth/throttle.js";
 
-describe("createPasswordVerifier", () => {
-  it("accepts the right password and rejects everything else", () => {
-    const v = createPasswordVerifier("hunter2");
-    expect(v.verify("hunter2")).toBe(true);
-    expect(v.verify("Hunter2")).toBe(false);
-    expect(v.verify("")).toBe(false);
+describe("hashPassword / verifyPassword", () => {
+  it("verifies the right password and rejects everything else", () => {
+    const stored = hashPassword("hunter2");
+    expect(verifyPassword("hunter2", stored)).toBe(true);
+    expect(verifyPassword("Hunter2", stored)).toBe(false);
+    expect(verifyPassword("", stored)).toBe(false);
+  });
+
+  it("produces a unique salt per call (same password ≠ same hash)", () => {
+    expect(hashPassword("same")).not.toBe(hashPassword("same"));
+  });
+
+  it("returns false on a malformed stored value rather than throwing", () => {
+    expect(verifyPassword("x", "garbage")).toBe(false);
+    expect(verifyPassword("x", "")).toBe(false);
   });
 });
 
 describe("createSessions", () => {
   const secret = "a".repeat(32);
 
-  it("signs and verifies a token", () => {
+  it("signs and verifies a token carrying the user id", () => {
     let t = 1000;
     const s = createSessions(secret, 10_000, () => t);
-    const token = s.sign({ did: "iPhone" });
-    expect(s.verify(token)).toMatchObject({ iat: 1000, exp: 11_000, did: "iPhone" });
+    const token = s.sign({ uid: "u1", uname: "lea", did: "iPhone" });
+    expect(s.verify(token)).toMatchObject({ iat: 1000, exp: 11_000, uid: "u1", uname: "lea", did: "iPhone" });
   });
 
   it("rejects an expired token", () => {

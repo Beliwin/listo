@@ -7,10 +7,13 @@ export const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/login", name: "login", component: () => import("@/views/LoginView.vue"), meta: { public: true } },
+    { path: "/join/:token", name: "join", component: () => import("@/views/JoinView.vue"), props: true, meta: { public: true } },
     { path: "/", name: "lists", component: () => import("@/views/ListsView.vue") },
     { path: "/lists/:id", name: "list", component: () => import("@/views/ListView.vue"), props: true },
     { path: "/lists/:id/shop", name: "shop", component: () => import("@/views/ShoppingView.vue"), props: true },
     { path: "/settings", name: "settings", component: () => import("@/views/SettingsView.vue") },
+    { path: "/settings/account", name: "account", component: () => import("@/views/AccountView.vue") },
+    { path: "/settings/users", name: "users", component: () => import("@/views/UsersView.vue"), meta: { admin: true } },
     { path: "/settings/categories", name: "categories", component: () => import("@/views/CategoriesView.vue") },
     { path: "/settings/catalog", name: "catalog", component: () => import("@/views/CatalogView.vue") },
     { path: "/:pathMatch(.*)*", redirect: "/" },
@@ -23,6 +26,8 @@ router.beforeEach(async (to) => {
 
   if (!to.meta.public && !session.authenticated) return { name: "login" };
   if (to.name === "login" && session.authenticated) return { name: "lists" };
+  // Admin-only views fall back to the lists for a signed-in non-admin.
+  if (to.meta.admin && !session.isAdmin) return { name: "lists" };
 
   // Ensure the sync engine is up before any authenticated view mounts (so
   // mutations can rely on the shared clock).

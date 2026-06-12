@@ -2,6 +2,7 @@ import { mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { serve } from "@hono/node-server";
 import { createApp } from "./app.js";
+import { bootstrapAdmin } from "./auth/bootstrap.js";
 import { runBackup } from "./backup.js";
 import { ConfigError, loadConfig } from "./config.js";
 import { openDatabase } from "./db/index.js";
@@ -31,10 +32,19 @@ function main(): void {
 
   const logger = createLogger(config.logLevel);
 
-  // Ordered boot: data dir → open db → migrate → serve.
+  // Ordered boot: data dir → open db → migrate → bootstrap admin → serve.
   mkdirSync(config.dataDir, { recursive: true });
   const db = openDatabase(config.dbPath);
   migrate(db, logger);
+  try {
+    bootstrapAdmin(db, config, logger);
+  } catch (err) {
+    if (err instanceof ConfigError) {
+      process.stderr.write(`[listo] configuration error: ${err.message}\n`);
+      process.exit(1);
+    }
+    throw err;
+  }
 
   // Conflict resolution leans on a roughly-correct wall clock. NTP is often
   // absent on minimal LXC/containers — the HLC degrades gracefully, but warn.

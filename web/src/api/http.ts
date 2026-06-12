@@ -36,15 +36,75 @@ export interface SyncApi {
 
 export interface SessionInfo {
   authenticated: boolean;
+  username?: string;
+  isAdmin?: boolean;
   issuedAt?: number;
   expiresAt?: number;
 }
 
+export interface AccountSummary {
+  ok: true;
+  username: string;
+  isAdmin: boolean;
+}
+
+export interface UserRecord {
+  id: string;
+  username: string;
+  isAdmin: boolean;
+  createdAt: number;
+}
+
+export interface PendingInvite {
+  id: string;
+  kind: "invite" | "reset";
+  isAdmin: boolean;
+  label: string | null;
+  targetUsername: string | null;
+  createdAt: number;
+  expiresAt: number;
+}
+
+export interface MintedInvite {
+  id?: string;
+  token: string;
+  expiresAt: number;
+}
+
+export interface InviteInfo {
+  valid: boolean;
+  kind?: "invite" | "reset";
+  /** Username being reset (kind = 'reset'); null for a fresh invite. */
+  username?: string | null;
+}
+
 export const api = {
-  login: (password: string, deviceName?: string) =>
-    request<{ ok: true }>("POST", "/api/auth/login", { password, deviceName }),
+  login: (username: string, password: string, deviceName?: string) =>
+    request<AccountSummary>("POST", "/api/auth/login", { username, password, deviceName }),
   logout: () => request<{ ok: true }>("POST", "/api/auth/logout"),
   session: () => request<SessionInfo>("GET", "/api/auth/session"),
+
+  // Invitation enrolment (public).
+  inviteInfo: (token: string) => request<InviteInfo>("GET", `/api/invite/${encodeURIComponent(token)}`),
+  acceptInvite: (token: string, password: string, username?: string, deviceName?: string) =>
+    request<AccountSummary>("POST", `/api/invite/${encodeURIComponent(token)}/accept`, {
+      username,
+      password,
+      deviceName,
+    }),
+
+  // Account management (authenticated; admin endpoints require an admin session).
+  changePassword: (currentPassword: string, newPassword: string) =>
+    request<{ ok: true }>("POST", "/api/account/password", { currentPassword, newPassword }),
+  listUsers: () => request<{ users: UserRecord[] }>("GET", "/api/users"),
+  deleteUser: (id: string) => request<{ ok: true }>("DELETE", `/api/users/${encodeURIComponent(id)}`),
+  resetLink: (id: string) =>
+    request<MintedInvite>("POST", `/api/users/${encodeURIComponent(id)}/reset-link`),
+  listInvitations: () => request<{ invitations: PendingInvite[] }>("GET", "/api/invitations"),
+  createInvitation: (opts: { isAdmin?: boolean; label?: string } = {}) =>
+    request<MintedInvite>("POST", "/api/invitations", opts),
+  revokeInvitation: (id: string) =>
+    request<{ ok: true }>("DELETE", `/api/invitations/${encodeURIComponent(id)}`),
 
   push: (req: PushRequest) => request<PushResponse>("POST", "/api/sync/push", req),
   pull: (since: number, epoch: number) =>

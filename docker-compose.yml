@@ -8,9 +8,12 @@ services:
     ports:
       - "8787:8787"
     environment:
-      # REQUIRED — set both in a .env file next to this compose file.
-      INSTANCE_PASSWORD: ${INSTANCE_PASSWORD:?set INSTANCE_PASSWORD in .env}
+      # REQUIRED — set in a .env file next to this compose file.
       SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET in .env}
+      # First-boot only: creates the initial admin on an empty database, then
+      # ignored. Manage users in-app afterwards (Settings → Manage accounts).
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
       # Behind a TLS-terminating reverse proxy (recommended): keep true.
       TRUST_PROXY: "true"
       LOG_LEVEL: info

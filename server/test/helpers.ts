@@ -1,8 +1,12 @@
 import type { Config } from "../src/config.js";
 import { createApp } from "../src/app.js";
+import { type User, createUser } from "../src/auth/users.js";
 import { type Db, openDatabase } from "../src/db/index.js";
 import { migrate } from "../src/db/migrate.js";
 import { createLogger } from "../src/logger.js";
+
+/** Default seeded admin used by most tests. */
+export const TEST_ADMIN = { username: "admin", password: "correct horse battery" };
 
 export function testConfig(over: Partial<Config> = {}): Config {
   return {
@@ -10,7 +14,6 @@ export function testConfig(over: Partial<Config> = {}): Config {
     host: "127.0.0.1",
     dataDir: "",
     dbPath: ":memory:",
-    instancePassword: "correct horse battery",
     sessionSecret: "x".repeat(32),
     cookieSecure: false,
     trustProxy: false,
@@ -29,9 +32,34 @@ export function makeTestDb(): Db {
   return db;
 }
 
-export function makeTestApp(over: Partial<Config> = {}): { app: ReturnType<typeof createApp>; db: Db; config: Config } {
+export function seedUser(
+  db: Db,
+  input: { username: string; password: string; isAdmin?: boolean },
+): User {
+  return createUser(db, input);
+}
+
+export function makeTestApp(
+  over: Partial<Config> = {},
+  opts: { seedAdmin?: boolean } = {},
+): { app: ReturnType<typeof createApp>; db: Db; config: Config; admin: User | null } {
   const config = testConfig(over);
   const db = makeTestDb();
+  const admin = opts.seedAdmin === false ? null : seedUser(db, { ...TEST_ADMIN, isAdmin: true });
   const app = createApp({ config, db, logger: createLogger("error", false) });
-  return { app, db, config };
+  return { app, db, config, admin };
+}
+
+/** Log in and return the raw Set-Cookie value (first part) for follow-up requests. */
+export async function loginCookie(
+  app: ReturnType<typeof createApp>,
+  username: string,
+  password: string,
+): Promise<string> {
+  const res = await app.request("/api/auth/login", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+  return (res.headers.get("set-cookie") ?? "").split(";")[0] ?? "";
 }

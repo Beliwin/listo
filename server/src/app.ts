@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { createAuth } from "./auth/index.js";
 import { securityHeaders } from "./middleware/security.js";
+import { registerAccountRoutes } from "./routes/accounts.js";
 import { registerAuthRoutes } from "./routes/auth.js";
 import { registerSseRoutes } from "./routes/sse.js";
 import { registerSuggestionsRoutes } from "./routes/suggestions.js";
@@ -45,6 +46,7 @@ export function createApp(ctx: AppContext): Hono<AppEnv> {
   });
 
   registerAuthRoutes(app, rc);
+  registerAccountRoutes(app, rc);
   registerSyncRoutes(app, rc);
   registerSseRoutes(app, rc, hub);
   registerSuggestionsRoutes(app, rc);

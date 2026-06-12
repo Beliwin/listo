@@ -8,10 +8,12 @@ export interface Config {
   host: string;
   dataDir: string;
   dbPath: string;
-  /** Shared instance password (raw). The auth layer derives an in-memory hash. */
-  instancePassword: string;
   /** HMAC key used to sign session cookies. */
   sessionSecret: string;
+  /** Bootstrap admin username — only used at first boot when no user exists. */
+  adminUsername?: string;
+  /** Bootstrap admin password — only used at first boot when no user exists. */
+  adminPassword?: string;
   /** Emit `Secure` cookies (and use the `__Host-` prefix). Auto-on when trustProxy. */
   cookieSecure: boolean;
   /** Trust `X-Forwarded-*` (running behind a reverse proxy that terminates TLS). */
@@ -58,12 +60,6 @@ function bool(env: Env, name: string, fallback: boolean): boolean {
  * unauthenticated or with unsignable sessions.
  */
 export function loadConfig(env: Env = process.env): Config {
-  const instancePassword = readSecret(env, "INSTANCE_PASSWORD");
-  if (!instancePassword) {
-    throw new ConfigError(
-      "INSTANCE_PASSWORD (or INSTANCE_PASSWORD_FILE) is required — the shared instance login secret.",
-    );
-  }
   const sessionSecret = readSecret(env, "SESSION_SECRET");
   if (!sessionSecret) {
     throw new ConfigError(
@@ -87,8 +83,9 @@ export function loadConfig(env: Env = process.env): Config {
     host: env.HOST ?? "0.0.0.0",
     dataDir,
     dbPath: join(dataDir, "listo.db"),
-    instancePassword,
     sessionSecret,
+    adminUsername: env.ADMIN_USERNAME,
+    adminPassword: readSecret(env, "ADMIN_PASSWORD"),
     // Secure cookies are mandatory behind a TLS-terminating proxy; opt-in otherwise.
     cookieSecure: bool(env, "COOKIE_SECURE", trustProxy),
     trustProxy,

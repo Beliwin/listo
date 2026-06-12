@@ -1,18 +1,15 @@
 import type { Context } from "hono";
 import type { Config } from "../config.js";
-import { type PasswordVerifier, createPasswordVerifier } from "./password.js";
 import { type Sessions, createSessions } from "./session.js";
 import { type LoginThrottle, createLoginThrottle } from "./throttle.js";
 
 export interface AuthServices {
-  verifier: PasswordVerifier;
   sessions: Sessions;
   throttle: LoginThrottle;
 }
 
 export function createAuth(config: Config): AuthServices {
   return {
-    verifier: createPasswordVerifier(config.instancePassword),
     sessions: createSessions(config.sessionSecret, config.sessionTtlDays * 86_400_000),
     throttle: createLoginThrottle(),
   };
@@ -33,5 +30,5 @@ export function getClientIp(c: Context, trustProxy: boolean): string {
   return env?.incoming?.socket?.remoteAddress ?? "unknown";
 }
 
-export type { PasswordVerifier, Sessions, LoginThrottle };
+export type { Sessions, LoginThrottle };
 export type { SessionPayload } from "./session.js";

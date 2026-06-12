@@ -1,7 +1,7 @@
 import { type Change, type SSEEvent, newId } from "@listo/shared";
 import { describe, expect, it } from "vitest";
 import { SignalQueue, createSseHub } from "../src/sync/sse-hub.js";
-import { makeTestApp } from "./helpers.js";
+import { TEST_ADMIN, loginCookie, makeTestApp } from "./helpers.js";
 
 const change = (seq: number): Change => ({ seq, entity: "item", entityId: "i", fields: [], origin: "X" });
 
@@ -44,15 +44,6 @@ describe("SignalQueue", () => {
     expect(await q.drain(10)).toEqual([]);
   });
 });
-
-async function loginCookie(app: ReturnType<typeof makeTestApp>["app"]): Promise<string> {
-  const res = await app.request("/api/auth/login", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ password: "correct horse battery" }),
-  });
-  return (res.headers.get("set-cookie") ?? "").split(";")[0] ?? "";
-}
 
 async function readSseEvents(
   reader: ReadableStreamDefaultReader<Uint8Array>,
@@ -97,7 +88,7 @@ async function readSseEvents(
 describe("GET /api/sync/stream", () => {
   it("greets with hello and pushes live changes to connected clients", async () => {
     const { app } = makeTestApp();
-    const cookie = await loginCookie(app);
+    const cookie = await loginCookie(app, TEST_ADMIN.username, TEST_ADMIN.password);
 
     const streamRes = await app.request("/api/sync/stream?since=0", { headers: { cookie } });
     expect(streamRes.status).toBe(200);

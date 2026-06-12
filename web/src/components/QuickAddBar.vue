@@ -7,6 +7,7 @@ import { type CatalogEntry, buildIndex, searchCatalog, userCatalogId } from "@/c
 import Icon from "@/components/Icon.vue";
 import { useLiveQuery } from "@/db/live";
 import { currentLocale } from "@/i18n";
+import { useSessionStore } from "@/stores/session";
 import { useSettingsStore } from "@/stores/settings";
 import { addItem, upsertCatalogEntry } from "@/sync/mutations";
 import { rankAtEnd } from "@/sync/rank";
@@ -17,6 +18,7 @@ const emit = defineEmits<{ added: [id: string] }>();
 
 const { t } = useI18n();
 const settings = useSettingsStore();
+const session = useSessionStore();
 
 const query = ref("");
 const open = ref(false);
@@ -56,7 +58,7 @@ async function add(entry?: CatalogEntry): Promise<void> {
     name,
     rank: rankAtEnd(props.lastRank),
     catalogId,
-    addedBy: settings.deviceName || null,
+    addedBy: session.username || settings.deviceName || null,
   });
 
   query.value = "";

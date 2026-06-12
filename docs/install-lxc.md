@@ -31,8 +31,9 @@ mkdir -p /var/lib/listo && chown listo:listo /var/lib/listo
 install -o listo -g listo -m 600 /dev/null /etc/listo.env
 cat > /etc/listo.env <<EOF
 DATA_DIR=/var/lib/listo
-INSTANCE_PASSWORD=$(openssl rand -hex 12)
 SESSION_SECRET=$(openssl rand -hex 32)
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=$(openssl rand -hex 12)
 TRUST_PROXY=true
 PORT=8787
 EOF

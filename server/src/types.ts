@@ -1,5 +1,6 @@
 import type { Change } from "@listo/shared";
 import type { AuthServices, SessionPayload } from "./auth/index.js";
+import type { User } from "./auth/users.js";
 import type { Config } from "./config.js";
 import type { Db } from "./db/index.js";
 import type { Logger } from "./logger.js";
@@ -24,5 +25,7 @@ export interface RouteContext extends AppContext {
 export interface AppEnv {
   Variables: {
     session: SessionPayload;
+    /** The authenticated account, re-read from the DB by `requireAuth`. */
+    user: User;
   };
 }

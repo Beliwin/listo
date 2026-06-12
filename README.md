@@ -23,22 +23,26 @@ working with no signal and resync when you're back. One container, one SQLite fi
 - **Suggestions** — frequently bought products surfaced as one-tap chips.
 - **Quantities & units**, **check = bought** (with a collapsible "taken" section), **"added by"** attribution.
 - **i18n** — French & English out of the box.
-- **Tiny & private** — no accounts, no tracking, no cloud. A single SQLite file you own.
+- **Tiny & private** — per-user accounts with invite links, no tracking, no cloud. A single SQLite file you own.
 
 ## Quick start (Docker)
 
 ```bash
 # 1. Create a .env next to docker-compose.yml
 cat > .env <<EOF
-INSTANCE_PASSWORD=$(openssl rand -hex 12)
 SESSION_SECRET=$(openssl rand -hex 32)
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=$(openssl rand -hex 12)
 EOF
 
 # 2. Bring it up
 docker compose up -d
 ```
 
-Open `http://localhost:8787` and log in with the `INSTANCE_PASSWORD` you generated.
+Open `http://localhost:8787` and log in as the admin you set in `.env`. From
+**Settings → Manage accounts** the admin can invite others (single-use links) and
+reset passwords. The `ADMIN_*` vars only seed the very first account — they're
+ignored once any account exists.
 
 The image is published multi-arch (amd64 + arm64) at `ghcr.io/beliwin/listo`. Your data
 lives in the `listo-data` volume (the SQLite database plus its WAL sidecars).
@@ -67,7 +71,7 @@ corepack enable
 pnpm install --frozen-lockfile
 pnpm build
 DATA_DIR=/var/lib/listo \
-INSTANCE_PASSWORD=... SESSION_SECRET=... \
+SESSION_SECRET=... ADMIN_USERNAME=admin ADMIN_PASSWORD=... \
 node server/dist/index.js
 ```
 
@@ -77,8 +81,9 @@ All configuration is via environment variables (see [`.env.example`](.env.exampl
 
 | Variable | Default | Notes |
 |---|---|---|
-| `INSTANCE_PASSWORD` | — | **Required.** Shared login password. `INSTANCE_PASSWORD_FILE` also supported. |
 | `SESSION_SECRET` | — | **Required**, ≥ 16 chars. Signs session cookies (`openssl rand -hex 32`). Rotating it logs everyone out. |
+| `ADMIN_USERNAME` | `admin` | First-boot only: username of the admin created on an empty DB. Ignored once any account exists. |
+| `ADMIN_PASSWORD` | — | First-boot only: password for that admin (`ADMIN_PASSWORD_FILE` also supported). Required on a fresh instance. |
 | `PORT` | `8787` | HTTP port. |
 | `HOST` | `0.0.0.0` | Bind address. |
 | `DATA_DIR` | `/data` | Holds `listo.db` (+ `-wal`/`-shm`). **Mount a volume here.** |

@@ -11,6 +11,7 @@ const router = useRouter();
 const session = useSessionStore();
 const settings = useSettingsStore();
 
+const username = ref("");
 const password = ref("");
 const deviceName = ref(settings.deviceName);
 const error = ref("");
@@ -21,7 +22,7 @@ async function submit(): Promise<void> {
   error.value = "";
   loading.value = true;
   try {
-    await session.login(password.value, deviceName.value || undefined);
+    await session.login(username.value.trim(), password.value, deviceName.value || undefined);
     if (deviceName.value) settings.setDeviceName(deviceName.value);
     await router.replace({ name: "lists" });
   } catch (e) {
@@ -45,6 +46,20 @@ async function submit(): Promise<void> {
       <p class="muted subtitle">{{ t("login.subtitle") }}</p>
 
       <div class="field">
+        <label for="user">{{ t("login.username") }}</label>
+        <input
+          id="user"
+          v-model="username"
+          class="input"
+          type="text"
+          autocomplete="username"
+          autocapitalize="none"
+          required
+          autofocus
+        />
+      </div>
+
+      <div class="field">
         <label for="pw">{{ t("login.password") }}</label>
         <input
           id="pw"
@@ -53,7 +68,6 @@ async function submit(): Promise<void> {
           type="password"
           autocomplete="current-password"
           required
-          autofocus
         />
       </div>
 

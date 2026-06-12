@@ -4,19 +4,15 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { ConfigError, loadConfig } from "../src/config.js";
 
-const base = { INSTANCE_PASSWORD: "pw", SESSION_SECRET: "x".repeat(16) };
+const base = { SESSION_SECRET: "x".repeat(16) };
 
 describe("loadConfig", () => {
-  it("throws when INSTANCE_PASSWORD is missing", () => {
-    expect(() => loadConfig({ SESSION_SECRET: "x".repeat(16) })).toThrow(ConfigError);
-  });
-
   it("throws when SESSION_SECRET is missing", () => {
-    expect(() => loadConfig({ INSTANCE_PASSWORD: "pw" })).toThrow(ConfigError);
+    expect(() => loadConfig({})).toThrow(ConfigError);
   });
 
   it("throws when SESSION_SECRET is too short", () => {
-    expect(() => loadConfig({ INSTANCE_PASSWORD: "pw", SESSION_SECRET: "short" })).toThrow(/16/);
+    expect(() => loadConfig({ SESSION_SECRET: "short" })).toThrow(/16/);
   });
 
   it("applies sensible defaults", () => {
@@ -35,8 +31,8 @@ describe("loadConfig", () => {
     const dir = mkdtempSync(join(tmpdir(), "listo-cfg-"));
     const file = join(dir, "pw");
     writeFileSync(file, "  super-secret-from-file  \n");
-    const c = loadConfig({ INSTANCE_PASSWORD_FILE: file, SESSION_SECRET: "x".repeat(16) });
-    expect(c.instancePassword).toBe("super-secret-from-file");
+    const c = loadConfig({ ...base, ADMIN_PASSWORD_FILE: file });
+    expect(c.adminPassword).toBe("super-secret-from-file");
   });
 
   it("disables static serving when WEB_DIR is empty", () => {

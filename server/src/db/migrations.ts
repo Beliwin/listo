@@ -156,4 +156,38 @@ export const MIGRATIONS: Migration[] = [
       );
     `,
   },
+  {
+    name: "006_accounts",
+    sql: /* sql */ `
+      -- Per-user accounts. SERVER-ONLY: never synced (not part of the shared
+      -- space) — the sync engine and oplog know nothing about these tables.
+      -- The instance is still one shared space; accounts add identity + auth,
+      -- not data partitioning. username is unique case-insensitively.
+      CREATE TABLE users (
+        id            TEXT PRIMARY KEY,                         -- uuidv7
+        username      TEXT NOT NULL UNIQUE COLLATE NOCASE,
+        password_hash TEXT NOT NULL,                            -- "salt:hash" (scrypt, hex)
+        is_admin      INTEGER NOT NULL DEFAULT 0,
+        created_at    INTEGER NOT NULL,
+        updated_at    INTEGER NOT NULL
+      );
+
+      -- Single-use enrolment / password-reset links. The raw token lives only in
+      -- the URL handed out; we store its SHA-256 so a DB leak can't be replayed.
+      --   kind = 'invite' → creates a new account (username chosen at accept time)
+      --   kind = 'reset'  → resets target_user's password (admin-initiated)
+      CREATE TABLE invitations (
+        id          TEXT PRIMARY KEY,             -- uuidv7 (list/revoke handle)
+        token_hash  TEXT NOT NULL UNIQUE,         -- sha256(raw token), hex
+        kind        TEXT NOT NULL,                -- 'invite' | 'reset'
+        target_user TEXT,                         -- user id when kind = 'reset'
+        is_admin    INTEGER NOT NULL DEFAULT 0,   -- role granted by an 'invite'
+        label       TEXT,                         -- free note (e.g. "for Léa")
+        created_by  TEXT NOT NULL,                -- admin user id
+        created_at  INTEGER NOT NULL,
+        expires_at  INTEGER NOT NULL,
+        used_at     INTEGER                       -- NULL = still pending
+      );
+    `,
+  },
 ];

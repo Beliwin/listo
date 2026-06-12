@@ -11,12 +11,16 @@ export interface SessionPayload {
   iat: number;
   /** expiry, epoch ms */
   exp: number;
+  /** account id — the authenticated user (required since the accounts model). */
+  uid?: string;
+  /** username at sign time (cosmetic convenience; auth always re-reads the DB) */
+  uname?: string;
   /** device id (cosmetic attribution; never an auth factor) */
   did?: string;
 }
 
 export interface Sessions {
-  sign(data?: { did?: string }): string;
+  sign(data?: { uid?: string; uname?: string; did?: string }): string;
   verify(token: string): SessionPayload | null;
 }
 
@@ -46,7 +50,13 @@ export function createSessions(
   return {
     sign(data = {}): string {
       const t = now();
-      const payload: SessionPayload = { iat: t, exp: t + ttlMs, ...(data.did ? { did: data.did } : {}) };
+      const payload: SessionPayload = {
+        iat: t,
+        exp: t + ttlMs,
+        ...(data.uid ? { uid: data.uid } : {}),
+        ...(data.uname ? { uname: data.uname } : {}),
+        ...(data.did ? { did: data.did } : {}),
+      };
       const body = b64urlEncode(JSON.stringify(payload));
       return `${body}.${hmac(body)}`;
     },
