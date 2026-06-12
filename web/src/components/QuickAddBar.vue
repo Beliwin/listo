@@ -2,6 +2,7 @@
 import { catalogItemId, normalizeName } from "@listo/shared";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { guessCategory } from "@/catalog/classify";
 import { type CatalogEntry, buildIndex, searchCatalog, userCatalogId } from "@/catalog/search";
 import Icon from "@/components/Icon.vue";
 import { useLiveQuery } from "@/db/live";
@@ -43,7 +44,9 @@ async function add(entry?: CatalogEntry): Promise<void> {
       displayName: name,
       normalizedName: normalizeName(name),
       locale: currentLocale(),
-      categoryKey: null,
+      // Auto-classify the new product (keyword rules + what the household has
+      // already filed). A wrong guess is one tap to fix — and that fix is learned.
+      categoryKey: guessCategory(name, userCatalog.value),
       defaultUnitKey: null,
     });
   }

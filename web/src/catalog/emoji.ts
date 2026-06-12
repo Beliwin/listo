@@ -17,33 +17,57 @@ import { CATALOG_SEED } from "./seed.js";
 /** Hand-picked emoji for each seed product, keyed by its stable `key`. */
 const SEED_EMOJI: Record<string, string> = {
   // Fruits & légumes
-  banana: "🍌", apple: "🍎", tomato: "🍅", potato: "🥔", carrot: "🥕",
-  onion: "🧅", garlic: "🧄", salad: "🥬", lemon: "🍋", avocado: "🥑",
+  banana: "🍌", apple: "🍎", pear: "🍐", orange: "🍊", clementine: "🍊",
+  grapes: "🍇", strawberry: "🍓", raspberry: "🫐", peach: "🍑", apricot: "🍑",
+  kiwi: "🥝", pineapple: "🍍", mango: "🥭", melon: "🍈", watermelon: "🍉",
+  tomato: "🍅", potato: "🥔", carrot: "🥕", zucchini: "🥒", eggplant: "🍆",
+  "pepper-veg": "🫑", cucumber: "🥒", onion: "🧅", shallot: "🧅", garlic: "🧄",
+  salad: "🥬", spinach: "🥬", broccoli: "🥦", cauliflower: "🥦", "green-beans": "🫛",
+  leek: "🥬", mushroom: "🍄", lemon: "🍋", avocado: "🥑", ginger: "🫚", herbs: "🌿",
   // Boulangerie
-  bread: "🥖", croissant: "🥐", "sandwich-bread": "🍞",
+  bread: "🥖", croissant: "🥐", "pain-chocolat": "🥐", "sandwich-bread": "🍞",
+  brioche: "🍞", wrap: "🌯", pita: "🫓",
   // Boucherie
-  chicken: "🍗", "ground-beef": "🥩", ham: "🍖", sausage: "🌭",
+  chicken: "🍗", "chicken-breast": "🍗", "ground-beef": "🥩", steak: "🥩",
+  pork: "🥓", turkey: "🦃", ham: "🍖", sausage: "🌭", merguez: "🌭",
+  lardons: "🥓", saucisson: "🍖", chorizo: "🌭", pate: "🥫", "cordon-bleu": "🍗",
   // Poissonnerie
-  salmon: "🐟", shrimp: "🦐", "tuna-can": "🥫",
+  salmon: "🐟", "smoked-salmon": "🍣", cod: "🐟", "white-fish": "🐟",
+  shrimp: "🦐", mussels: "🦪", surimi: "🦀",
   // Crémerie
   milk: "🥛", butter: "🧈", eggs: "🥚", yogurt: "🍶", cheese: "🧀", cream: "🥛",
+  camembert: "🧀", emmental: "🧀", mozzarella: "🧀", "goat-cheese": "🧀",
+  "fromage-blanc": "🥛", "petit-suisse": "🥛", compote: "🍎", "dessert-cream": "🍮",
   // Épicerie salée
-  pasta: "🍝", rice: "🍚", flour: "🌾", "olive-oil": "🫒", salt: "🧂",
-  pepper: "🌶️", "canned-tomato": "🥫", tuna: "🐟",
+  pasta: "🍝", rice: "🍚", semolina: "🍚", lentils: "🫘", chickpeas: "🫘",
+  flour: "🌾", "olive-oil": "🫒", oil: "🛢️", vinegar: "🍶", salt: "🧂",
+  pepper: "🌶️", spices: "🌶️", mustard: "🟡", ketchup: "🍅", mayo: "🥚",
+  "tomato-sauce": "🥫", "canned-tomato": "🥫", tuna: "🐟", corn: "🌽", soup: "🍲",
+  chips: "🥔", olives: "🫒", pickles: "🥒", stock: "🧊", pesto: "🌿",
   // Épicerie sucrée
-  sugar: "🍬", chocolate: "🍫", cookies: "🍪", cereal: "🥣", jam: "🍓",
-  honey: "🍯", coffee: "☕", tea: "🍵",
+  sugar: "🍬", chocolate: "🍫", spread: "🍫", cookies: "🍪", cereal: "🥣",
+  jam: "🍓", honey: "🍯", coffee: "☕", tea: "🍵", "hot-chocolate": "🍫",
+  candy: "🍬", "cereal-bar": "🍫", "baking-yeast": "🌾", nuts: "🥜",
   // Surgelés
-  "frozen-pizza": "🍕", "ice-cream": "🍨", "frozen-veg": "🥦",
+  "frozen-pizza": "🍕", "ice-cream": "🍨", "frozen-veg": "🥦", fries: "🍟",
+  "frozen-fish": "🐟",
   // Boissons
-  water: "💧", "sparkling-water": "🫧", juice: "🧃", soda: "🥤",
-  beer: "🍺", wine: "🍷",
+  water: "💧", "sparkling-water": "🫧", juice: "🧃", soda: "🥤", "ice-tea": "🧋",
+  beer: "🍺", wine: "🍷", champagne: "🍾", syrup: "🧃",
   // Hygiène & beauté
-  toothpaste: "🪥", shampoo: "🧴", soap: "🧼", "toilet-paper": "🧻",
+  toothpaste: "🪥", toothbrush: "🪥", shampoo: "🧴", "shower-gel": "🧴",
+  soap: "🧼", deodorant: "🧴", "toilet-paper": "🧻", tissues: "🤧",
+  razor: "🪒", cotton: "☁️", pads: "🩹",
   // Entretien
-  "dish-soap": "🧴", sponge: "🧽", "trash-bags": "🗑️", laundry: "🧺",
-  // Bébé / Animaux
-  diapers: "🍼", "cat-food": "🐱", "dog-food": "🐶",
+  "dish-soap": "🧴", "dishwasher-tabs": "🧼", sponge: "🧽", "trash-bags": "🗑️",
+  laundry: "🧺", softener: "🧴", bleach: "🧴", cleaner: "🧴", "paper-towel": "🧻",
+  // Bébé
+  diapers: "🍼", "baby-wipes": "🧷", "baby-food": "🍼", "baby-milk": "🍼",
+  // Animaux
+  "cat-food": "🐱", "dog-food": "🐶", "cat-litter": "🐱", "pet-treats": "🦴",
+  // Maison
+  batteries: "🔋", lightbulb: "💡", candle: "🕯️", foil: "🧈", "cling-film": "🎞️",
+  "freezer-bags": "🧊", matches: "🔥",
 };
 
 /**
