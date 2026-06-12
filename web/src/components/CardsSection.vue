@@ -103,19 +103,15 @@ function maskCode(code: string): string {
 
     <ul v-else class="cards">
       <li v-for="card in sorted" :key="card.id">
-        <button
-          class="card-tile"
-          :style="{ '--tile': card.color || 'var(--accent)' }"
-          @click="showing = card"
-        >
-          <span class="tile-main">
+        <div class="card-tile" :style="{ '--tile': card.color || 'var(--accent)' }">
+          <button class="tile-main" :aria-label="card.label" @click="showing = card">
             <span class="tile-label">{{ card.label }}</span>
             <span class="tile-code">{{ maskCode(card.code) }}</span>
-          </span>
+          </button>
           <button class="btn-icon edit" :aria-label="t('cards.edit')" @click.stop="openEdit(card)">
             <Icon name="edit" :size="17" />
           </button>
-        </button>
+        </div>
       </li>
     </ul>
 
@@ -261,11 +257,20 @@ function maskCode(code: string): string {
 }
 .tile-main {
   flex: 1;
+  align-self: stretch;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
   gap: 0.15rem;
   padding: 0.85rem 0;
   min-width: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
 }
 .tile-label {
   font-family: var(--font-display);
