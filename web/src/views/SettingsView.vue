@@ -15,10 +15,6 @@ const session = useSessionStore();
 
 const locales: AppLocale[] = ["fr", "en"];
 
-function onDeviceName(e: Event): void {
-  settings.setDeviceName((e.target as HTMLInputElement).value);
-}
-
 async function logout(): Promise<void> {
   teardownSync();
   await session.logout();
@@ -49,13 +45,6 @@ async function logout(): Promise<void> {
             {{ loc.toUpperCase() }}
           </button>
         </div>
-      </section>
-
-      <section class="card group">
-        <label class="field">
-          <span>{{ t("settings.deviceName") }}</span>
-          <input class="input" :value="settings.deviceName" :placeholder="t('login.deviceNamePlaceholder')" @input="onDeviceName" />
-        </label>
       </section>
 
       <nav class="card links">

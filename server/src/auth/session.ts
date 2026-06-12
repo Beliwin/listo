@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 
 /**
  * Stateless, HMAC-signed session tokens (no JWT dependency). Payload is a tiny
- * base64url JSON blob: issued-at, expiry, optional device id. Because it is
+ * base64url JSON blob: issued-at, expiry, and the account id. Because it is
  * stateless, individual sessions cannot be revoked before expiry — rotating
  * SESSION_SECRET invalidates ALL sessions at once (documented).
  */
@@ -15,12 +15,10 @@ export interface SessionPayload {
   uid?: string;
   /** username at sign time (cosmetic convenience; auth always re-reads the DB) */
   uname?: string;
-  /** device id (cosmetic attribution; never an auth factor) */
-  did?: string;
 }
 
 export interface Sessions {
-  sign(data?: { uid?: string; uname?: string; did?: string }): string;
+  sign(data?: { uid?: string; uname?: string }): string;
   verify(token: string): SessionPayload | null;
 }
 
@@ -55,7 +53,6 @@ export function createSessions(
         exp: t + ttlMs,
         ...(data.uid ? { uid: data.uid } : {}),
         ...(data.uname ? { uname: data.uname } : {}),
-        ...(data.did ? { did: data.did } : {}),
       };
       const body = b64urlEncode(JSON.stringify(payload));
       return `${body}.${hmac(body)}`;

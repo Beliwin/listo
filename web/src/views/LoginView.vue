@@ -4,16 +4,13 @@ import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { ApiError } from "@/api/http";
 import { useSessionStore } from "@/stores/session";
-import { useSettingsStore } from "@/stores/settings";
 
 const { t } = useI18n();
 const router = useRouter();
 const session = useSessionStore();
-const settings = useSettingsStore();
 
 const username = ref("");
 const password = ref("");
-const deviceName = ref(settings.deviceName);
 const error = ref("");
 const loading = ref(false);
 
@@ -22,8 +19,7 @@ async function submit(): Promise<void> {
   error.value = "";
   loading.value = true;
   try {
-    await session.login(username.value.trim(), password.value, deviceName.value || undefined);
-    if (deviceName.value) settings.setDeviceName(deviceName.value);
+    await session.login(username.value.trim(), password.value);
     await router.replace({ name: "lists" });
   } catch (e) {
     error.value = e instanceof ApiError && e.status === 429 ? t("login.throttled") : t("login.error");
@@ -68,18 +64,6 @@ async function submit(): Promise<void> {
           type="password"
           autocomplete="current-password"
           required
-        />
-      </div>
-
-      <div class="field">
-        <label for="dev">{{ t("login.deviceName") }}</label>
-        <input
-          id="dev"
-          v-model="deviceName"
-          class="input"
-          type="text"
-          :placeholder="t('login.deviceNamePlaceholder')"
-          autocomplete="off"
         />
       </div>
 

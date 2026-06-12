@@ -4,14 +4,6 @@ import { type AppLocale, currentLocale, setLocale } from "@/i18n";
 
 export type ListLayout = "list" | "grid";
 
-function readDeviceName(): string {
-  try {
-    return localStorage.getItem("listo.deviceName") ?? "";
-  } catch {
-    return "";
-  }
-}
-
 function readLayout(): ListLayout {
   try {
     return localStorage.getItem("listo.layout") === "grid" ? "grid" : "list";
@@ -21,18 +13,8 @@ function readLayout(): ListLayout {
 }
 
 export const useSettingsStore = defineStore("settings", () => {
-  const deviceName = ref(readDeviceName());
   const locale = ref<AppLocale>(currentLocale());
   const layout = ref<ListLayout>(readLayout());
-
-  function setDeviceName(name: string): void {
-    deviceName.value = name;
-    try {
-      localStorage.setItem("listo.deviceName", name);
-    } catch {
-      /* ignore */
-    }
-  }
 
   function changeLocale(next: AppLocale): void {
     locale.value = next;
@@ -52,5 +34,5 @@ export const useSettingsStore = defineStore("settings", () => {
     setLayout(layout.value === "grid" ? "list" : "grid");
   }
 
-  return { deviceName, locale, layout, setDeviceName, changeLocale, setLayout, toggleLayout };
+  return { locale, layout, changeLocale, setLayout, toggleLayout };
 });

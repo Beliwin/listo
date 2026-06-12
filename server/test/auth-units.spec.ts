@@ -27,8 +27,8 @@ describe("createSessions", () => {
   it("signs and verifies a token carrying the user id", () => {
     let t = 1000;
     const s = createSessions(secret, 10_000, () => t);
-    const token = s.sign({ uid: "u1", uname: "lea", did: "iPhone" });
-    expect(s.verify(token)).toMatchObject({ iat: 1000, exp: 11_000, uid: "u1", uname: "lea", did: "iPhone" });
+    const token = s.sign({ uid: "u1", uname: "lea" });
+    expect(s.verify(token)).toMatchObject({ iat: 1000, exp: 11_000, uid: "u1", uname: "lea" });
   });
 
   it("rejects an expired token", () => {

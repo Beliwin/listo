@@ -8,17 +8,12 @@ import type { AppEnv, RouteContext } from "../types.js";
 interface LoginBody {
   username?: unknown;
   password?: unknown;
-  deviceName?: unknown;
 }
 
 interface AcceptBody {
   username?: unknown;
   password?: unknown;
-  deviceName?: unknown;
 }
-
-const deviceId = (raw: unknown): string | undefined =>
-  typeof raw === "string" && raw.length > 0 ? raw.slice(0, 64) : undefined;
 
 /** Mount the public auth routes (login, logout, session, invitation enrolment). */
 export function registerAuthRoutes(app: Hono<AppEnv>, ctx: RouteContext): void {
@@ -52,7 +47,7 @@ export function registerAuthRoutes(app: Hono<AppEnv>, ctx: RouteContext): void {
     auth.throttle.succeed(ip);
     setSessionToken(
       c,
-      auth.sessions.sign({ uid: user.id, uname: user.username, did: deviceId(body.deviceName) }),
+      auth.sessions.sign({ uid: user.id, uname: user.username }),
       config.cookieSecure,
       maxAgeSec,
     );
@@ -109,7 +104,7 @@ export function registerAuthRoutes(app: Hono<AppEnv>, ctx: RouteContext): void {
       // Log the freshly-enrolled user straight in.
       setSessionToken(
         c,
-        auth.sessions.sign({ uid: user.id, uname: user.username, did: deviceId(body.deviceName) }),
+        auth.sessions.sign({ uid: user.id, uname: user.username }),
         config.cookieSecure,
         maxAgeSec,
       );

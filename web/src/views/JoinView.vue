@@ -4,14 +4,12 @@ import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { ApiError, api } from "@/api/http";
 import { useSessionStore } from "@/stores/session";
-import { useSettingsStore } from "@/stores/settings";
 
 const props = defineProps<{ token: string }>();
 
 const { t } = useI18n();
 const router = useRouter();
 const session = useSessionStore();
-const settings = useSettingsStore();
 
 type State = "loading" | "ready" | "invalid";
 const state = ref<State>("loading");
@@ -19,7 +17,6 @@ const kind = ref<"invite" | "reset">("invite");
 const username = ref("");
 const password = ref("");
 const confirm = ref("");
-const deviceName = ref(settings.deviceName);
 const error = ref("");
 const loading = ref(false);
 
@@ -51,9 +48,7 @@ async function submit(): Promise<void> {
       props.token,
       password.value,
       kind.value === "invite" ? username.value.trim() : undefined,
-      deviceName.value || undefined,
     );
-    if (deviceName.value) settings.setDeviceName(deviceName.value);
     session.adopt(res);
     await router.replace({ name: "lists" });
   } catch (e) {
@@ -114,18 +109,6 @@ async function submit(): Promise<void> {
       <div class="field">
         <label for="pw2">{{ t("join.confirm") }}</label>
         <input id="pw2" v-model="confirm" class="input" type="password" autocomplete="new-password" required />
-      </div>
-
-      <div class="field">
-        <label for="dev">{{ t("login.deviceName") }}</label>
-        <input
-          id="dev"
-          v-model="deviceName"
-          class="input"
-          type="text"
-          :placeholder="t('login.deviceNamePlaceholder')"
-          autocomplete="off"
-        />
       </div>
 
       <p v-if="error" class="error" role="alert">{{ error }}</p>

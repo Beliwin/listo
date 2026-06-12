@@ -8,8 +8,6 @@ export default {
     subtitle: "Connecte-toi avec ton compte.",
     username: "Identifiant",
     password: "Mot de passe",
-    deviceName: "Nom de l'appareil (optionnel)",
-    deviceNamePlaceholder: "ex. iPhone de Léa",
     submit: "Entrer",
     error: "Identifiant ou mot de passe incorrect.",
     throttled: "Trop de tentatives. Réessaie dans un instant.",
@@ -148,7 +146,6 @@ export default {
   settings: {
     title: "Réglages",
     language: "Langue",
-    deviceName: "Nom de l'appareil",
     account: "Mon compte",
     users: "Gérer les comptes",
     categoriesOrder: "Ordre des rayons",

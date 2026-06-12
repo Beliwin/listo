@@ -79,18 +79,17 @@ export interface InviteInfo {
 }
 
 export const api = {
-  login: (username: string, password: string, deviceName?: string) =>
-    request<AccountSummary>("POST", "/api/auth/login", { username, password, deviceName }),
+  login: (username: string, password: string) =>
+    request<AccountSummary>("POST", "/api/auth/login", { username, password }),
   logout: () => request<{ ok: true }>("POST", "/api/auth/logout"),
   session: () => request<SessionInfo>("GET", "/api/auth/session"),
 
   // Invitation enrolment (public).
   inviteInfo: (token: string) => request<InviteInfo>("GET", `/api/invite/${encodeURIComponent(token)}`),
-  acceptInvite: (token: string, password: string, username?: string, deviceName?: string) =>
+  acceptInvite: (token: string, password: string, username?: string) =>
     request<AccountSummary>("POST", `/api/invite/${encodeURIComponent(token)}/accept`, {
       username,
       password,
-      deviceName,
     }),
 
   // Account management (authenticated; admin endpoints require an admin session).

@@ -8,7 +8,6 @@ import Icon from "@/components/Icon.vue";
 import { useLiveQuery } from "@/db/live";
 import { currentLocale } from "@/i18n";
 import { useSessionStore } from "@/stores/session";
-import { useSettingsStore } from "@/stores/settings";
 import { addItem, upsertCatalogEntry } from "@/sync/mutations";
 import { rankAtEnd } from "@/sync/rank";
 import { clock, database } from "@/sync/service";
@@ -17,7 +16,6 @@ const props = defineProps<{ listId: string; lastRank: string | null }>();
 const emit = defineEmits<{ added: [id: string] }>();
 
 const { t } = useI18n();
-const settings = useSettingsStore();
 const session = useSessionStore();
 
 const query = ref("");
@@ -58,7 +56,7 @@ async function add(entry?: CatalogEntry): Promise<void> {
     name,
     rank: rankAtEnd(props.lastRank),
     catalogId,
-    addedBy: session.username || settings.deviceName || null,
+    addedBy: session.username || null,
   });
 
   query.value = "";

@@ -6,14 +6,14 @@ import { type CatalogEntry, buildIndex } from "@/catalog/search";
 import Icon from "@/components/Icon.vue";
 import { useLiveQuery } from "@/db/live";
 import { currentLocale } from "@/i18n";
-import { useSettingsStore } from "@/stores/settings";
+import { useSessionStore } from "@/stores/session";
 import { addItem } from "@/sync/mutations";
 import { rankAtEnd } from "@/sync/rank";
 import { clock, database } from "@/sync/service";
 
 const props = defineProps<{ listId: string; lastRank: string | null }>();
 const { t } = useI18n();
-const settings = useSettingsStore();
+const session = useSessionStore();
 
 const userCatalog = useLiveQuery(() => database().catalog.toArray(), []);
 const index = computed(() => buildIndex(currentLocale(), userCatalog.value));
@@ -52,7 +52,7 @@ async function add(entry: CatalogEntry): Promise<void> {
     rank: rankAtEnd(props.lastRank),
     catalogId: entry.catalogId,
     unitKey: entry.defaultUnitKey,
-    addedBy: settings.deviceName || null,
+    addedBy: session.username || null,
   });
 }
 </script>

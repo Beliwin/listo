@@ -8,8 +8,6 @@ export default {
     subtitle: "Sign in with your account.",
     username: "Username",
     password: "Password",
-    deviceName: "Device name (optional)",
-    deviceNamePlaceholder: "e.g. Lea's iPhone",
     submit: "Enter",
     error: "Wrong username or password.",
     throttled: "Too many attempts. Try again in a moment.",
@@ -148,7 +146,6 @@ export default {
   settings: {
     title: "Settings",
     language: "Language",
-    deviceName: "Device name",
     account: "My account",
     users: "Manage accounts",
     categoriesOrder: "Aisle order",

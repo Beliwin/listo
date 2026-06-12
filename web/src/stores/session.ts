@@ -22,8 +22,8 @@ export const useSessionStore = defineStore("session", () => {
     }
   }
 
-  async function login(name: string, password: string, deviceName?: string): Promise<void> {
-    const res = await api.login(name, password, deviceName);
+  async function login(name: string, password: string): Promise<void> {
+    const res = await api.login(name, password);
     apply({ authenticated: true, username: res.username, isAdmin: res.isAdmin });
   }
 
