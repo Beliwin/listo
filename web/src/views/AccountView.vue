@@ -83,31 +83,6 @@ async function submit(): Promise<void> {
   flex-direction: column;
   gap: 1rem;
 }
-.group {
-  padding: 1rem 1.1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-.group h2 {
-  margin: 0;
-  font-size: 0.95rem;
-}
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-.error {
-  color: var(--danger);
-  font-size: 0.9rem;
-  margin: 0;
-}
-.ok {
-  color: var(--accent);
-  font-size: 0.9rem;
-  margin: 0;
-}
 .btn-primary {
   align-self: flex-start;
 }

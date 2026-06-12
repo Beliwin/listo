@@ -191,16 +191,6 @@ const myId = computed(() => users.value.find((u) => u.username === session.usern
   flex-direction: column;
   gap: 1rem;
 }
-.group {
-  padding: 1rem 1.1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-.group h2 {
-  margin: 0;
-  font-size: 0.95rem;
-}
 .minted {
   border: 1px solid var(--accent);
 }
@@ -214,11 +204,6 @@ const myId = computed(() => users.value.find((u) => u.username === session.usern
 }
 .dismiss {
   align-self: flex-start;
-}
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
 }
 .check {
   display: inline-flex;
@@ -264,10 +249,5 @@ const myId = computed(() => users.value.find((u) => u.username === session.usern
 }
 .btn-icon.danger {
   color: var(--danger);
-}
-.error {
-  color: var(--danger);
-  font-size: 0.9rem;
-  margin: 0;
 }
 </style>

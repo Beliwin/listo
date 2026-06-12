@@ -50,13 +50,13 @@ async function logout(): Promise<void> {
       <nav class="card links">
         <router-link class="link" :to="{ name: 'account' }">
           <span class="lbl"
-            ><Icon name="settings" :size="18" /> {{ t("settings.account")
+            ><Icon name="user" :size="18" /> {{ t("settings.account")
             }}<small v-if="session.username" class="who">· {{ session.username }}</small></span
           >
           <span class="chev" aria-hidden="true"><Icon name="chevron" :size="18" /></span>
         </router-link>
         <router-link v-if="session.isAdmin" class="link" :to="{ name: 'users' }">
-          <span class="lbl"><Icon name="settings" :size="18" /> {{ t("settings.users") }}</span>
+          <span class="lbl"><Icon name="users" :size="18" /> {{ t("settings.users") }}</span>
           <span class="chev" aria-hidden="true"><Icon name="chevron" :size="18" /></span>
         </router-link>
       </nav>
@@ -86,16 +86,6 @@ async function logout(): Promise<void> {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-.group {
-  padding: 1rem 1.1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-.group h2 {
-  margin: 0;
-  font-size: 0.95rem;
 }
 .seg {
   display: inline-flex;

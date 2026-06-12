@@ -53,6 +53,15 @@ defineProps<{ name: string; size?: number }>();
       <rect x="3" y="5" width="18" height="14" rx="2.5" />
       <path d="M3 9.5h18M6.5 14.5h4" />
     </template>
+    <template v-else-if="name === 'user'">
+      <circle cx="12" cy="8.5" r="3.5" />
+      <path d="M5 19.5c1.3-3 4-4.5 7-4.5s5.7 1.5 7 4.5" />
+    </template>
+    <template v-else-if="name === 'users'">
+      <circle cx="9.5" cy="8.5" r="3" />
+      <path d="M3.5 19c1.1-2.6 3.4-4 6-4s4.9 1.4 6 4" />
+      <path d="M15.5 5.7a3 3 0 0 1 0 5.6M17.5 15.4c1.6.7 2.7 1.9 3.2 3.6" />
+    </template>
     <template v-else-if="name === 'cart'">
       <path d="M3 4h2l2.2 10.4a1.5 1.5 0 0 0 1.5 1.2h7.8a1.5 1.5 0 0 0 1.5-1.2L20.5 7H6.2" />
       <circle cx="9.5" cy="19.5" r="1.3" fill="currentColor" stroke="none" />

@@ -18,13 +18,14 @@
   --surface: #ffffff;
   --surface-2: #f3f0e9;
   --fg: #221f1a;
-  --muted: #8c867a;
+  --muted: #7d7669;
   --faint: #b6b0a3;
-  --line: #ebe7dd;
+  --line: #e7e2d5;
   --accent: #2c7a51;
   --accent-fg: #ffffff;
   --accent-soft: #e7f0ea;
   --danger: #b8462f;
+  --danger-soft: #f7e4dd;
 
   --font-body: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
@@ -46,16 +47,17 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #14120d;
-    --surface: #1b1812;
-    --surface-2: #252118;
+    --surface: #1f1b13;
+    --surface-2: #2a251a;
     --fg: #ece7db;
     --muted: #9a9384;
     --faint: #6c655a;
-    --line: #2a2519;
+    --line: #332c1e;
     --accent: #5bbd84;
     --accent-fg: #0b1610;
     --accent-soft: #1c2c22;
     --danger: #e0735a;
+    --danger-soft: #342018;
     --shadow: 0 1px 1px rgba(0, 0, 0, 0.3), 0 10px 24px -14px rgba(0, 0, 0, 0.55);
   }
 }
@@ -173,6 +175,7 @@ h3 {
 }
 .btn-danger {
   color: var(--danger);
+  background: var(--danger-soft);
 }
 
 /* Quiet icon button: a soft square, never a heavy circle. */
@@ -207,10 +210,22 @@ h3 {
   flex-direction: column;
   gap: 0.4rem;
 }
-.field > label {
+/* The caption is a <label> in form views and a <span> when .field is itself a <label>. */
+.field > label,
+.field > span {
   font-size: 0.82rem;
   font-weight: 500;
   color: var(--muted);
+}
+.error {
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin: 0;
+}
+.ok {
+  color: var(--accent);
+  font-size: 0.9rem;
+  margin: 0;
 }
 .input {
   min-height: 42px;
@@ -232,6 +247,17 @@ h3 {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
+}
+/* A padded settings-style card: small serif heading + stacked content. */
+.group {
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.group h2 {
+  margin: 0;
+  font-size: 0.95rem;
 }
 
 /* ── Utility ──────────────────────────────────────────────────────────────── */

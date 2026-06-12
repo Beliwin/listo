@@ -112,11 +112,6 @@ async function submit(): Promise<void> {
   margin: -0.5rem 0 0.25rem;
   font-size: 0.9rem;
 }
-.error {
-  color: var(--danger);
-  font-size: 0.9rem;
-  margin: 0;
-}
 .submit {
   margin-top: 0.25rem;
 }

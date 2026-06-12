@@ -217,9 +217,14 @@ function maskCode(code: string): string {
 .section-head h2 :deep(svg) {
   color: var(--faint);
 }
+/* An empty slot, not bare text — hints at the tile that will appear here. */
 .cards-empty {
   font-size: 0.9rem;
-  padding: 0.25rem 0 0.5rem;
+  margin: 0;
+  padding: 1.1rem 1rem;
+  text-align: center;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius);
 }
 .cards {
   list-style: none;
@@ -373,6 +378,8 @@ function maskCode(code: string): string {
   justify-content: center;
   padding: 1.25rem;
 }
+/* Deliberately hardcoded white in both themes: store barcode scanners need
+   maximum contrast, so the presented card must never follow the dark palette. */
 .present-card {
   background: #fff;
   color: #111;
